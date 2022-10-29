@@ -1,0 +1,16 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "HRA Recycling",
+                "description": "Hvis du trenger hjep til konfigurasjon ta en titt her: https://github.com/custom-components/hra_recycling",
+                "data": {
+                    "address": "Adresse"
+                }
+            }
+        },
+        "error": {
+            "invalid_address": "Ingen hentekalender funnet på denne adressen. Prøv på nytt."
+        }
+    }
+}

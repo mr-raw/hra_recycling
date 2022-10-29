@@ -1,9 +1,3 @@
-"""
-Custom integration to integrate integration_blueprint with Home Assistant.
-
-For more details about this integration, please refer to
-https://github.com/custom-components/integration_blueprint
-"""
 import asyncio
 from datetime import timedelta
 import logging
@@ -14,23 +8,22 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import IntegrationBlueprintApiClient
+from .api import ApiClient
 
 from .const import (
-    CONF_PASSWORD,
-    CONF_USERNAME,
+    CONF_ADDRESS,
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,
 )
 
-SCAN_INTERVAL = timedelta(seconds=30)
-
+SCAN_INTERVAL = timedelta(seconds=3600)  # Will fetch the data every hour.
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
+    _LOGGER.debug("Set up this integration using YAML is not supported.")
     return True
 
 
@@ -40,13 +33,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
-
+    address = entry.data.get(CONF_ADDRESS)
     session = async_get_clientsession(hass)
-    client = IntegrationBlueprintApiClient(username, password, session)
 
-    coordinator = BlueprintDataUpdateCoordinator(hass, client=client)
+    client = ApiClient(address, session)
+    coordinator = HraDataUpdateCoordinator(hass, client=client)
+
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -65,12 +57,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-class BlueprintDataUpdateCoordinator(DataUpdateCoordinator):
+class HraDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
-    def __init__(
-        self, hass: HomeAssistant, client: IntegrationBlueprintApiClient
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, client: ApiClient) -> None:
         """Initialize."""
         self.api = client
         self.platforms = []

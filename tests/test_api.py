@@ -4,14 +4,14 @@ import asyncio
 import aiohttp
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from custom_components.integration_blueprint.api import IntegrationBlueprintApiClient
+from custom_components.hra_recycling.api import ApiClient
 
 
 async def test_api(hass, aioclient_mock, caplog):
     """Test API calls."""
 
     # To test the api submodule, we first create an instance of our API client
-    api = IntegrationBlueprintApiClient("test", "test", async_get_clientsession(hass))
+    api = ApiClient("test", "test", async_get_clientsession(hass))
 
     # Use aioclient_mock which is provided by `pytest_homeassistant_custom_components`
     # to mock responses to aiohttp requests. In this case we are telling the mock to
@@ -42,7 +42,9 @@ async def test_api(hass, aioclient_mock, caplog):
         "https://jsonplaceholder.typicode.com/posts/1", exc=asyncio.TimeoutError
     )
     assert (
-        await api.api_wrapper("put", "https://jsonplaceholder.typicode.com/posts/1")
+        await api.return_agreement_id_from_address(
+            "put", "https://jsonplaceholder.typicode.com/posts/1"
+        )
         is None
     )
     assert (
@@ -55,7 +57,9 @@ async def test_api(hass, aioclient_mock, caplog):
         "https://jsonplaceholder.typicode.com/posts/1", exc=aiohttp.ClientError
     )
     assert (
-        await api.api_wrapper("post", "https://jsonplaceholder.typicode.com/posts/1")
+        await api.return_agreement_id_from_address(
+            "post", "https://jsonplaceholder.typicode.com/posts/1"
+        )
         is None
     )
     assert (
@@ -66,7 +70,9 @@ async def test_api(hass, aioclient_mock, caplog):
     caplog.clear()
     aioclient_mock.post("https://jsonplaceholder.typicode.com/posts/2", exc=Exception)
     assert (
-        await api.api_wrapper("post", "https://jsonplaceholder.typicode.com/posts/2")
+        await api.return_agreement_id_from_address(
+            "post", "https://jsonplaceholder.typicode.com/posts/2"
+        )
         is None
     )
     assert (
@@ -77,7 +83,9 @@ async def test_api(hass, aioclient_mock, caplog):
     caplog.clear()
     aioclient_mock.post("https://jsonplaceholder.typicode.com/posts/3", exc=TypeError)
     assert (
-        await api.api_wrapper("post", "https://jsonplaceholder.typicode.com/posts/3")
+        await api.return_agreement_id_from_address(
+            "post", "https://jsonplaceholder.typicode.com/posts/3"
+        )
         is None
     )
     assert (

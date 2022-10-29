@@ -1,14 +1,15 @@
 """Constants for integration_blueprint."""
 # Base component constants
-NAME = "Integration blueprint"
-DOMAIN = "integration_blueprint"
+NAME = "HRA Recycling"
+DOMAIN = "hra_recycling"
 DOMAIN_DATA = f"{DOMAIN}_data"
+COMPANY = "Raw Software"
 VERSION = "0.0.1"
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
-ISSUE_URL = "https://github.com/custom-components/integration_blueprint/issues"
+ATTRIBUTION = "Data scraped from https://hra.no/"
+ISSUE_URL = "https://github.com/custom-components/hra_recycling/issues"
 
 # Icons
-ICON = "mdi:format-quote-close"
+ICON = "mdi:trash-can"
 
 # Device classes
 BINARY_SENSOR_DEVICE_CLASS = "connectivity"
@@ -17,13 +18,10 @@ BINARY_SENSOR_DEVICE_CLASS = "connectivity"
 BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
-
+PLATFORMS = [SENSOR]
 
 # Configuration and options
-CONF_ENABLED = "enabled"
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
+CONF_ADDRESS = "address"
 
 # Defaults
 DEFAULT_NAME = DOMAIN

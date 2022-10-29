@@ -1,0 +1,12 @@
+{
+  "domain": "hra_recycling",
+  "name": "HRA Recycling",
+  "documentation": "https://github.com/custom-components/hra_recycle",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/custom-components/hra_recycle/issues",
+  "version": "0.0.1",
+  "config_flow": true,
+  "codeowners": [
+    "@mr-raw"
+  ]
+}

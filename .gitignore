@@ -4,6 +4,7 @@ venv
 .venv
 .coverage
 .idea
-github/
-devcontainer/
-vscode/
+.github/
+.devcontainer/
+.vscode/
+.devcontainer/

@@ -1,8 +1,5 @@
 # integration_blueprint
 
-[![GitHub Activity][commits-shield]][commits]
-[![hacs][hacsbadge]][hacs]
-![Project Maintenance][maintenance-shield]
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
 
@@ -23,15 +20,14 @@ Using your HA configuration directory (folder) as a starting point you should no
 ```text
 custom_components/integration_blueprint/translations/en.json
 custom_components/integration_blueprint/translations/nb.json
-custom_components/integration_blueprint/translations/sensor.nb.json
 custom_components/integration_blueprint/__init__.py
 custom_components/integration_blueprint/api.py
-custom_components/integration_blueprint/binary_sensor.py
 custom_components/integration_blueprint/config_flow.py
 custom_components/integration_blueprint/const.py
+custom_components/integration_blueprint/entity.py
 custom_components/integration_blueprint/manifest.json
 custom_components/integration_blueprint/sensor.py
-custom_components/integration_blueprint/switch.py
+
 ```
 
 ## Configuration is done in the UI
@@ -39,7 +35,3 @@ custom_components/integration_blueprint/switch.py
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
-[commits]: https://github.com/mr-raw/hra_recycling/commits/master
-[hacs]: https://github.com/custom-components/hacs
-[releases-shield]: https://img.shields.io/github/release/custom-components/blueprint.svg?style=for-the-badge
-[releases]: https://github.com/mr-raw/hra_recycling/releases

@@ -1,10 +1,7 @@
 {
     "name": "HRA Recycling",
     "hacs": "1.6.0",
-    "domains": [
-        "sensor"
-    ],
+    "domains": "sensor",
     "homeassistant": "0.118.0",
-    "render_readme": true,
     "country": "NO"
 }

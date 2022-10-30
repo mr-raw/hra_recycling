@@ -1,36 +1,36 @@
-# integration_blueprint
+# HRA Recycling
 
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
+## What is this?
 
-
+This is an Home Assistant integration for the Norwegian waste collection company HRA (Hadeland Ringerike Avfallsselskap). You can track the pickup dates for the different fractions (Plastic, bio, glass/metal and unsorted waste)
 
 ## Installation
 
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-2. If you do not have a `custom_components` directory (folder) there, you need to create it.
-3. In the `custom_components` directory (folder) create a new folder called `integration_blueprint`.
-4. Download _all_ the files from the `custom_components/integration_blueprint/` directory (folder) in this repository.
-5. Place the files you downloaded in the new directory (folder) you created.
-6. Restart Home Assistant
-7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Integration blueprint"
+This integration is currently in development. ==It will not work if you try it right now== It will not work until I release 0.1.0.
 
-Using your HA configuration directory (folder) as a starting point you should now also have this:
+Norwegian text will appear here.
 
-```text
-custom_components/integration_blueprint/translations/en.json
-custom_components/integration_blueprint/translations/nb.json
-custom_components/integration_blueprint/__init__.py
-custom_components/integration_blueprint/api.py
-custom_components/integration_blueprint/config_flow.py
-custom_components/integration_blueprint/const.py
-custom_components/integration_blueprint/entity.py
-custom_components/integration_blueprint/manifest.json
-custom_components/integration_blueprint/sensor.py
+Version plans
+- [ ] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around :)
 
-```
+- [ ] 0.2.0 Catch user mistakes and correct them. Alternatively use default settings.
 
-## Configuration is done in the UI
+- [ ] 0.3.0
+
+- [ ] 0.4.0
+
+- [ ] 0.5.0 Code refactoring
+
+- [ ] 0.8.0 The logo and icon has to be online.
+
+- [ ] 0.9.0 External testing. Noen som vil teste? :)
+
+- [ ] 1.0.0 Final release. You can choose wich fractions to track. The integration has been thorougly tested.
+
+
+## Setup and configuration is done in the UI
 
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae

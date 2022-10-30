@@ -1,7 +1,7 @@
 """BlueprintEntity class"""
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, NAME, VERSION, ATTRIBUTION, COMPANY
+from .const import DOMAIN, NAME, VERSION, ATTRIBUTION
 
 
 class IntegrationBlueprintEntity(CoordinatorEntity):
@@ -22,7 +22,7 @@ class IntegrationBlueprintEntity(CoordinatorEntity):
             "identifiers": {(DOMAIN, self.unique_id)},
             "name": NAME,
             "model": VERSION,
-            "manufacturer": COMPANY,
+            "manufacturer": NAME,
         }
 
     @property

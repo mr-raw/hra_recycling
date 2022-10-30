@@ -3,7 +3,6 @@
 NAME = "HRA Recycling"
 DOMAIN = "hra_recycling"
 DOMAIN_DATA = f"{DOMAIN}_data"
-COMPANY = "Raw Software"
 VERSION = "0.0.1"
 ATTRIBUTION = "Data scraped from https://hra.no/"
 ISSUE_URL = "https://github.com/custom-components/hra_recycling/issues"

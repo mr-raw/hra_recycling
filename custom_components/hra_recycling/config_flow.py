@@ -31,29 +31,23 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             # Check if the address is correct here
 
-            valid = True
+            valid = await self._check_if_address_is_correct(user_input[CONF_ADDRESS])
             if valid:
                 return self.async_create_entry(
-                    # title=user_input[CONF_ADDRESS], data=user_input
-                    title="Hadeland Ringerike Avfallsselskap",
+                    title=user_input[CONF_ADDRESS],
                     data=user_input,
                 )
             else:  # The address is not correct
-                self._errors["base"] = "auth"
+                self._errors["error"] = "invalid_address"
 
             return await self._show_config_form(user_input)
 
         user_input = {}
         # Provide defaults for form
-        user_input[CONF_ADDRESS] = "Musmyrvegen 10, 3520 Jevnaker"
+        user_input[CONF_ADDRESS] = ""
+        # At a later stage, it will be possible to choose the area
 
         return await self._show_config_form(user_input)
-
-    # @staticmethod
-    # @callback
-    # def async_get_options_flow(config_entry):
-    #     return BlueprintOptionsFlowHandler(config_entry)
-    # get_options_flow() viser en konfigurasjons-skjerm for å endre på innstil
 
     async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""
@@ -64,6 +58,9 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=scheme, errors=self._errors
         )
+
+    async def _check_if_address_is_correct(self, address_name):
+        return True  #
 
 
 # class BlueprintOptionsFlowHandler(config_entries.OptionsFlow):

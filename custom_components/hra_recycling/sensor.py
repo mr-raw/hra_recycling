@@ -2,7 +2,7 @@
 from homeassistant.components.sensor import SensorEntity
 
 from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
-from .entity import IntegrationBlueprintEntity
+from .entity import Entity
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
@@ -11,7 +11,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     async_add_devices([CreateSensor(coordinator, entry)])
 
 
-class CreateSensor(IntegrationBlueprintEntity, SensorEntity):
+class CreateSensor(Entity, SensorEntity):
     """integration_blueprint Sensor class."""
 
     @property
@@ -19,11 +19,6 @@ class CreateSensor(IntegrationBlueprintEntity, SensorEntity):
         """Return the name of the sensor."""
         # return f"{DEFAULT_NAME}_{SENSOR}"
         return "HRA Recycle Sensor"
-
-    @property
-    def friendly_name(self):
-        """Will this work?"""
-        return "Ostekake"
 
     @property
     def native_value(self):

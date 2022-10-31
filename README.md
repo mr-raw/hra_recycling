@@ -8,9 +8,9 @@ This is an Home Assistant integration for the Norwegian waste collection company
 
 ## Installation
 
-This integration is currently in development. ==It will not work if you try it right now== It will not work until I release 0.1.0.
+This integration is currently in development. It will not work if you try it right now. It will not work until I release 0.1.0.
 
-Norwegian text will appear here.
+> Norwegian text will appear here.
 
 Version plans
 - [ ] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around :)

@@ -4,8 +4,8 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, NAME, VERSION, ATTRIBUTION
 
 
-class IntegrationBlueprintEntity(CoordinatorEntity):
-    """The Entity Blueprint"""
+class Entity(CoordinatorEntity):
+    """The Entity"""
 
     def __init__(self, coordinator, config_entry):
         super().__init__(coordinator)

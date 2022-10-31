@@ -17,7 +17,8 @@ from .const import (
     STARTUP_MESSAGE,
 )
 
-SCAN_INTERVAL = timedelta(seconds=3600)  # Will fetch the data every hour.
+# Will fetch the data every hour. Once every 24 hours should be enough, though.
+SCAN_INTERVAL = timedelta(seconds=3600)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 

@@ -4,13 +4,13 @@
 
 ## What is this?
 
-This is an Home Assistant integration for the Norwegian waste collection company HRA (Hadeland Ringerike Avfallsselskap). You can track the pickup dates for the different fractions (Plastic, bio, glass/metal and unsorted waste)
+This is a Home Assistant integration for the Norwegian waste collection company HRA (Hadeland Ringerike Avfallsselskap). You can track the pickup dates for the different fractions (Plastic, bio, glass/metal and unsorted waste)
+
+> Norwegian text will appear here.
 
 ## Installation
 
 This integration is currently in development. It will not work if you try it right now. It will not work until I release 0.1.0.
-
-> Norwegian text will appear here.
 
 Version plans
 - [ ] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around :)

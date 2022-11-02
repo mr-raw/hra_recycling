@@ -1,4 +1,4 @@
-"""Constants for integration_blueprint."""
+"""Constants for HRA Recycle."""
 # Base component constants
 NAME = "HRA Recycling"
 DOMAIN = "hra_recycling"
@@ -10,13 +10,8 @@ ISSUE_URL = "https://github.com/custom-components/hra_recycling/issues"
 # Icons
 ICON = "mdi:trash-can"
 
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
-
 # Platforms
-BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
-SWITCH = "switch"
 PLATFORMS = [SENSOR]
 
 # Configuration and options
@@ -24,7 +19,6 @@ CONF_ADDRESS = "address"
 
 # Defaults
 DEFAULT_NAME = DOMAIN
-
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

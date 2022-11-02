@@ -7,11 +7,7 @@ from homeassistant.helpers.selector import selector
 import voluptuous as vol
 
 from .api import ApiClient
-from .const import (
-    CONF_ADDRESS,
-    DOMAIN,
-    PLATFORMS,
-)
+from .const import CONF_ADDRESS, DOMAIN
 
 
 class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

@@ -1,3 +1,4 @@
+"""The init module"""
 import asyncio
 from datetime import timedelta
 import logging
@@ -22,6 +23,7 @@ SCAN_INTERVAL = timedelta(seconds=3600)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
+# TODO: Find out if the this could be removed. Maybe manifest.json decides if this should be run?
 async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
     return True

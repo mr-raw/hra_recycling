@@ -2,6 +2,7 @@
 
 [![buymecoffee][buymecoffeebadge]][buymecoffee]
 [![hacs_action_url][hacs_action_badge]][hacs_action_url]
+[![hassfest_url][hassfest_badge]][hassfest_url]
 
 ## What is this?
 
@@ -35,8 +36,10 @@ Version plans
 
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae
-[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
+[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg
 [hacs_action_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml
 [hacs_action_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml/badge.svg?branch=master
+[hassfest_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hassfest.yml/badge.svg?branch=master
+[hassfest_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/hassfest.yml
 
 

@@ -1,6 +1,7 @@
 # HRA Recycling
 
-[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
+[![buymecoffee][buymecoffeebadge]][buymecoffee]
+[![hacs_action_url][hacs_action_badge]][hacs_action_url]
 
 ## What is this?
 
@@ -35,3 +36,7 @@ Version plans
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
+[hacs_action_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml
+[hacs_action_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml/badge.svg?branch=master
+
+

@@ -52,7 +52,7 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
         return self.async_show_form(
-            step_id="user", data_schema=scheme, errors=self._errors
+            step_id="init", data_schema=scheme, errors=self._errors
         )
 
     async def _check_if_address_is_correct(self, address_name):

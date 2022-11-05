@@ -21,16 +21,11 @@ class ApiClient:
         self._session = session
         self._agreement_id = ""
 
-    async def async_get_data(self) -> list:
-        """Get the agreementID from from api.hra.no."""
+    async def async_verify_address(self) -> list:
+        """Verify that the provided address is valid."""
 
-        # if the _agreement_id = "", then fetch the agreement id. Then fetch the collection data
-        # if the _agreement_id = <correc_id>, then go ahead and fetch the collection data
-        url = "https://api.hra.no/search/address?query=R%C3%A5dhusvegen%2039%2C%202770%20JAREN"
+        url = f"https://api.hra.no/search/address?query={self._address}"
 
-        if self._agreement_id == "":
-            temp = await self.return_agreement_id_from_address(url)
-            self._agreement_id = temp[0]
         return await self.return_agreement_id_from_address(url)
 
     async def return_agreement_id_from_address(self, url: str) -> list:

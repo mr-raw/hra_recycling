@@ -3,7 +3,7 @@
         "step": {
             "init": {
                 "title": "HRA Recycling",
-                "description": "Hvis du trenger hjep til konfigurasjon ta en titt her: https://github.com/custom-components/hra_recycling",
+                "description": "Hvis du trenger hjep til konfigurasjon, ta en titt her: https://github.com/custom-components/hra_recycling",
                 "data": {
                     "address": "Adresse"
                 }

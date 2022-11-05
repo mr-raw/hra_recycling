@@ -1,9 +1,9 @@
 {
   "domain": "hra_recycling",
   "name": "HRA Recycling",
-  "documentation": "https://github.com/mr-raw/hra_recycle",
+  "documentation": "https://github.com/mr-raw/hra_recycling",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/mr-raw/hra_recycle/issues",
+  "issue_tracker": "https://github.com/mr-raw/hra_recycling/issues",
   "version": "0.0.1",
   "config_flow": true,
   "codeowners": [

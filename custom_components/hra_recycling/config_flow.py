@@ -1,9 +1,6 @@
-"""Adds config flow for Blueprint."""
-from statistics import mode
+"""The Config Flow"""
 from homeassistant import config_entries
-from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from homeassistant.helpers.selector import selector
 import voluptuous as vol
 
 from .api import ApiClient
@@ -34,7 +31,7 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     data=user_input,
                 )
             else:  # The address is not correct
-                self._errors["error"] = "invalid_address"
+                self._errors["base"] = "invalid_address"
 
             return await self._show_config_form(user_input)
 
@@ -55,8 +52,17 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=scheme, errors=self._errors
         )
 
-    async def _check_if_address_is_correct(self, address_name):
-        return True  #
+    async def _check_if_address_is_correct(self, address):
+        """Return true if address is valid."""
+        try:
+            session = async_create_clientsession(self.hass)
+            client = ApiClient(address, session)
+            temp = await client.async_verify_address()
+            if len(temp) == 1:
+                return True
+        except Exception:  # pylint: disable=broad-except
+            pass
+        return False
 
 
 # class BlueprintOptionsFlowHandler(config_entries.OptionsFlow):
@@ -81,7 +87,8 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 #             step_id="user",
 #             data_schema=vol.Schema(
 #                 {
-#                     # https://developers.home-assistant.io/docs/development_validation/ for all the types.
+#                     # https://developers.home-assistant.io/docs/development_validation/
+# for all the types.
 #                     vol.Required(x, default=self.options.get(x, True)): bool
 #                     for x in sorted(PLATFORMS)
 #                 }

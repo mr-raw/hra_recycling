@@ -1,7 +1,7 @@
 """The init module"""
 import asyncio
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
@@ -10,23 +10,15 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import ApiClient
-
-from .const import (
-    CONF_ADDRESS,
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .const import CONF_ADDRESS, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 
 # Will fetch the data every hour. Once every 24 hours should be enough, though.
 SCAN_INTERVAL = timedelta(seconds=3600)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-
-# TODO: Find out if the this could be removed. Maybe manifest.json decides if this should be run?
-async def async_setup(hass: HomeAssistant, config: Config):
-    """Set up this integration using YAML is not supported."""
-    return True
+# async def async_setup(hass: HomeAssistant, config: Config):
+#     """Set up this integration using YAML is not supported."""
+#     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -72,7 +64,7 @@ class HraDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.api.async_get_data()
+            return await self.api.async_verify_address()
         except Exception as exception:
             raise UpdateFailed() from exception
 

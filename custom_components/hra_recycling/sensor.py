@@ -1,7 +1,7 @@
 """Sensor platform for integration_blueprint."""
 from homeassistant.components.sensor import SensorEntity
 
-from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
+from .const import DOMAIN, ICON
 from .entity import Entity
 
 

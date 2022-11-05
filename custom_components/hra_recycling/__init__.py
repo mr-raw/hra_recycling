@@ -16,10 +16,6 @@ from .const import CONF_ADDRESS, DOMAIN, PLATFORMS, STARTUP_MESSAGE
 SCAN_INTERVAL = timedelta(seconds=3600)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-# async def async_setup(hass: HomeAssistant, config: Config):
-#     """Set up this integration using YAML is not supported."""
-#     return True
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
@@ -64,7 +60,7 @@ class HraDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.api.async_verify_address()
+            return await self.api.async_update_data()
         except Exception as exception:
             raise UpdateFailed() from exception
 

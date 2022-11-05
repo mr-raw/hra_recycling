@@ -58,3 +58,6 @@ class ApiClient:
             )
         except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.error("Something really wrong happened! - %s", exception)
+
+    async def async_update_data(self) -> None:
+        """Updates the data"""

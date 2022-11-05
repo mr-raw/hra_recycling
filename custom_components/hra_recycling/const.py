@@ -5,7 +5,7 @@ DOMAIN = "hra_recycling"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.0.1"
 ATTRIBUTION = "Data scraped from https://hra.no/"
-ISSUE_URL = "https://github.com/custom-components/hra_recycling/issues"
+ISSUE_URL = "https://github.com/mr-raw/hra_recycling/issues"
 
 # Icons
 ICON = "mdi:trash-can"

@@ -19,7 +19,7 @@ class ApiClient:
         """HRA API Client"""
         self._address = address  # This your street address
         self._session = session
-        self._agreement_id = ""
+        self.agreement_id = ""
 
     async def async_verify_address(self) -> list:
         """Verify that the provided address is valid."""
@@ -59,5 +59,5 @@ class ApiClient:
         except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.error("Something really wrong happened! - %s", exception)
 
-    async def async_update_data(self) -> None:
+    async def async_update_data(self) -> list:
         """Updates the data"""

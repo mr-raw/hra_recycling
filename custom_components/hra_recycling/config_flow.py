@@ -37,7 +37,7 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         user_input = {}
         # Provide defaults for form
-        user_input[CONF_ADDRESS] = ""
+        user_input[CONF_ADDRESS] = "Rådhusvegen 39"
         # At a later stage, it will be possible to choose the area
 
         return await self._show_config_form(user_input)
@@ -59,6 +59,7 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             client = ApiClient(address, session)
             temp = await client.async_verify_address()
             if len(temp) == 1:
+                client.agreement_id = temp[0].get("agreementGuid")
                 return True
         except Exception:  # pylint: disable=broad-except
             pass

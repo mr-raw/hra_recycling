@@ -30,7 +30,5 @@
         }
     },
     "remoteUser": "vscode",
-    "features": {
-        "rust": "latest"
-    }
+    "features": {}
 }

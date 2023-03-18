@@ -24,10 +24,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
 
     address = entry.data.get(CONF_ADDRESS)
-    session = async_get_clientsession(hass)
-
-    client = ApiClient(address, session)
-    coordinator = HraDataUpdateCoordinator(hass, client=client)
+    #session = async_get_clientsession(hass)
+    async with async_get_clientsession(hass) as session:
+        client: ApiClient = ApiClient(address, session)
+        coordinator = HraDataUpdateCoordinator(hass, client=client)
 
     await coordinator.async_refresh()
 

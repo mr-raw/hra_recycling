@@ -17,14 +17,14 @@ class ApiClient:
 
     def __init__(self, address: str, session: aiohttp.ClientSession) -> None:
         """HRA API Client"""
-        self._address = address  # This your street address
-        self._session = session
+        self.address = address  # This your street address
+        self.session = session
         self.agreement_id = ""
 
     async def async_verify_address(self) -> list:
         """Verify that the provided address is valid."""
 
-        url = f"https://api.hra.no/search/address?query={self._address}"
+        url = f"https://api.hra.no/search/address?query={self.address}"
 
         return await self._get_agreement_id_from_address(url)
 
@@ -33,7 +33,7 @@ class ApiClient:
 
         try:
             async with async_timeout.timeout(TIMEOUT):
-                resp = await self._session.get(url)
+                resp = await self.session.get(url)
             return await resp.json()
 
         except asyncio.TimeoutError as exception:

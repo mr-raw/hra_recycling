@@ -2,15 +2,23 @@
     "config": {
         "step": {
             "user": {
-                "title": "HRA Recycling",
+                "title": "Konfigurer HRA Gjenvinning",
                 "description": "Hvis du trenger hjep til konfigurasjon, ta en titt her: https://github.com/mr-raw/hra_recycling",
                 "data": {
                     "address": "Adresse"
+                }
+            },
+            "agreement": {
+                "title": "Avtale Detaljer",
+                "description": "Avtale GUID for den oppgitte adressen er: {agreementGuid}.",
+                "data": {
+                    "confirm": "Bekreft"
                 }
             }
         },
         "error": {
             "invalid_address": "Ingen hentekalender funnet på denne adressen. Prøv på nytt."
-        }
+        },
+        "title": "HRA Gjenvinning"
     }
 }

@@ -26,9 +26,9 @@ class ApiClient:
 
         url = f"https://api.hra.no/search/address?query={self._address}"
 
-        return await self.return_agreement_id_from_address(url)
+        return await self._get_agreement_id_from_address(url)
 
-    async def return_agreement_id_from_address(self, url: str) -> list:
+    async def _get_agreement_id_from_address(self, url: str) -> list:
         """Get information from the API."""
 
         try:

@@ -1,0 +1,24 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configure HRA Recycling",
+                "description": "If you need help with configuration, take a look here: https://github.com/mr-raw/hra_recycling",
+                "data": {
+                    "address": "Address"
+                }
+            },
+            "agreement": {
+                "title": "Agreement Details",
+                "description": "Agreement GUID for the provided address is: {agreementGuid}.",
+                "data": {
+                    "confirm": "Confirm"
+                }
+            }
+        },
+        "error": {
+            "invalid_address": "No collection calendar found for this address. Please try again."
+        },
+        "title": "HRA Recycling"
+    }
+}

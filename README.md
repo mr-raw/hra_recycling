@@ -28,7 +28,7 @@ Version plans
 
 If you have any questions, feel free to reach out to me on Discord:
 
-[![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/EliteRaw#7095)
+[![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
 
 
 [hra_recycle]: https://github.com/mr-raw/hra_recycling

@@ -3,7 +3,7 @@
 [![buymecoffee][buymecoffeebadge]][buymecoffee]
 [![hacs_action_url][hacs_action_badge]][hacs_action_url]
 [![hassfest_url][hassfest_badge]][hassfest_url]
-[![Discord](https://img.shields.io/badge/Discord-mr-raw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
+[![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
 
 ## What is this?
 
@@ -18,7 +18,7 @@ This integration is currently in development. It will not work if you try it rig
 Version plans
 - [ ] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around :)
 
-- More info to come.
+> More info to come.
 
 - [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 

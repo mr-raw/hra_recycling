@@ -6,7 +6,8 @@
         {
             "label": "Run Home Assistant",
             "type": "shell",
-            "command": "scripts/develop"
+            "command": "scripts/develop",
+            "problemMatcher": []
         }
     ]
 }

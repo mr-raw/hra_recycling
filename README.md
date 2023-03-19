@@ -3,6 +3,7 @@
 [![buymecoffee][buymecoffeebadge]][buymecoffee]
 [![hacs_action_url][hacs_action_badge]][hacs_action_url]
 [![hassfest_url][hassfest_badge]][hassfest_url]
+[![Discord](https://img.shields.io/badge/Discord-mr-raw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
 
 ## What is this?
 
@@ -26,9 +27,9 @@ Version plans
 
 ## Contact
 
-If you have any questions, feel free to reach out to me on Discord:
+If you have any questions, feel free to reach out to me on [![Discord]](https://discord.com/users/303915063142776832):
 
-[![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
+
 
 
 [hra_recycle]: https://github.com/mr-raw/hra_recycling

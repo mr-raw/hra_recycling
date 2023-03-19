@@ -1,7 +1,7 @@
 # HRA Recycling
 
 [![buymecoffee][buymecoffeebadge]][buymecoffee]
-[![validate_url][validate_badgle]][validate_url]
+[![validate_url][validate_badge]][validate_url]
 [![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
 
 ## What is this?

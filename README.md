@@ -22,15 +22,11 @@ Version plans
 
 - [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 
-
 ## Setup and configuration is done in the UI
 
 ## Contact
 
 If you have any questions, feel free to reach out to me on [Discord](https://discord.com/users/303915063142776832)
-
-
-
 
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae

@@ -1,4 +1,5 @@
 {
+    "title": "HRA Recycling",
     "config": {
         "step": {
             "user": {
@@ -18,7 +19,6 @@
         },
         "error": {
             "invalid_address": "No collection calendar found for this address. Please try again."
-        },
-        "title": "HRA Recycling"
+        }
     }
 }

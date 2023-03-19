@@ -1,8 +1,7 @@
 # HRA Recycling
 
 [![buymecoffee][buymecoffeebadge]][buymecoffee]
-[![hacs_action_url][hacs_action_badge]][hacs_action_url]
-[![hassfest_url][hassfest_badge]][hassfest_url]
+[![validate_url][validate_badgle]][validate_url]
 [![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/303915063142776832)
 
 ## What is this?
@@ -31,7 +30,5 @@ If you have any questions, feel free to reach out to me on [Discord](https://dis
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg
-[hacs_action_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml
-[hacs_action_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml/badge.svg?branch=master
-[hassfest_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hassfest.yml/badge.svg?branch=master
-[hassfest_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/hassfest.yml
+[validate_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/validate.yml
+[validate_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/validate.yml/badge.svg?branch=master

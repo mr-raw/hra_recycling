@@ -27,7 +27,7 @@ Version plans
 
 ## Contact
 
-If you have any questions, feel free to reach out to me on [![Discord]](https://discord.com/users/303915063142776832):
+If you have any questions, feel free to reach out to me on [Discord](https://discord.com/users/303915063142776832)
 
 
 

@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Home Assistant",
+            "type": "python",
+            "request": "launch",
+            "module": "homeassistant",
+            "args": [
+                "--config",
+                "${workspaceFolder}/"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": false
+        }
+    ]
+}

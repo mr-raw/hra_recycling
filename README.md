@@ -17,22 +17,19 @@ This integration is currently in development. It will not work if you try it rig
 Version plans
 - [ ] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around :)
 
-- [ ] 0.2.0 Catch user mistakes and correct them. Alternatively use default settings.
+- More info to come.
 
-- [ ] 0.3.0
-
-- [ ] 0.4.0
-
-- [ ] 0.5.0 Code refactoring
-
-- [ ] 0.8.0 The logo and icon has to be online.
-
-- [ ] 0.9.0 External testing. Noen som vil teste? :)
-
-- [ ] 1.0.0 Final release. You can choose wich fractions to track. The integration has been thorougly tested.
+- [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 
 
 ## Setup and configuration is done in the UI
+
+## Contact
+
+If you have any questions, feel free to reach out to me on Discord:
+
+[![Discord](https://img.shields.io/badge/Discord-EliteRaw%237095-blue?logo=discord)](https://discord.com/users/YourUserID)
+
 
 [hra_recycle]: https://github.com/mr-raw/hra_recycling
 [buymecoffee]: https://www.buymeacoffee.com/erikraae
@@ -41,5 +38,3 @@ Version plans
 [hacs_action_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hacs_action.yml/badge.svg?branch=master
 [hassfest_badge]: https://github.com/mr-raw/hra_recycling/actions/workflows/hassfest.yml/badge.svg?branch=master
 [hassfest_url]: https://github.com/mr-raw/hra_recycling/actions/workflows/hassfest.yml
-
-

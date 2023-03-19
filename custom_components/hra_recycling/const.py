@@ -1,5 +1,9 @@
-"""Constants for HRA Recycle."""
+"""const.py"""
+from logging import Logger, getLogger
+from datetime import timedelta
+
 # Base component constants
+
 NAME = "HRA Recycling"
 DOMAIN = "hra_recycling"
 DOMAIN_DATA = f"{DOMAIN}_data"
@@ -7,8 +11,8 @@ VERSION = "0.0.1"
 ATTRIBUTION = "Data scraped from https://hra.no/"
 ISSUE_URL = "https://github.com/mr-raw/hra_recycling/issues"
 
-# Icons
-ICON = "mdi:trash-can"
+LOGGER: Logger = getLogger(__package__)
+SCAN_INTERVAL = timedelta(seconds=3600)
 
 # Platforms
 SENSOR = "sensor"

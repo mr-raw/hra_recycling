@@ -1,13 +1,13 @@
+"""config_flow.py"""
 from homeassistant import config_entries
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 import voluptuous as vol
-
-from .api import ApiClient
+from .hra_api import ApiClient
 from .const import CONF_ADDRESS, DOMAIN
 
 
 class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
-    """Config flow for Blueprint."""
+    """Config flow for HRA Recycling."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL

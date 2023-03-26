@@ -3,6 +3,6 @@ default_config:
 
 # Use debug logging.
 logger:
-  default: info
+  default: warning
   logs:
     custom_components.hra_recycling: debug

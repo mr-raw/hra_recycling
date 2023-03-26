@@ -3,13 +3,16 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+
+# from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+
+# from homeassistant.helpers.update_coordinator
+# import DataUpdateCoordinator, UpdateFailed
 from .coordinator import HraDataUpdateCoordinator
 
 from .hra_api import ApiClient
-from .const import CONF_ADDRESS, DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .const import CONF_ADDRESS, DOMAIN, STARTUP_MESSAGE, LOGGER
 
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
@@ -17,6 +20,7 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
+    LOGGER.debug(STARTUP_MESSAGE)
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = coordinator = HraDataUpdateCoordinator(
         hass=hass,

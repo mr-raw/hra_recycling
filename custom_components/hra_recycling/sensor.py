@@ -2,7 +2,7 @@
 from homeassistant.components.sensor import SensorEntityDescription, SensorEntity
 from .const import DOMAIN, LOGGER
 from .coordinator import HraDataUpdateCoordinator
-from .entity import Entity
+from .HRA_Recycle_Entity import HRA_Recycle_Entity
 
 FRACTION_NAMES = (
     SensorEntityDescription(
@@ -43,7 +43,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     )
 
 
-class HRARecyclingSensor(Entity, SensorEntity):
+class HRARecyclingSensor(HRA_Recycle_Entity, SensorEntity):
     """Sensor representing HRA Recycling fraction."""
 
     def __init__(
@@ -54,7 +54,6 @@ class HRARecyclingSensor(Entity, SensorEntity):
         """Initialize sensor."""
         self.fraction = fraction
         self.agreement_id = coordinator.data[0].get("agreementGuid")
-        LOGGER.debug(self.agreement_id)
         super().__init__(coordinator)
 
     @property
@@ -65,12 +64,16 @@ class HRARecyclingSensor(Entity, SensorEntity):
     @property
     def unique_id(self):
         """Return a unique ID."""
-        return f"{DOMAIN}_{self.fraction.key}_{self.coordinator.client.address.lower().replace(' ', '_')}_{self.agreement_id}"
+        key = self.fraction.key
+        addr_fixed = self.coordinator.client.address.lower().replace(" ", "_")
+        u_id = f"{DOMAIN}_{key}_{addr_fixed}"
+        LOGGER.debug(u_id)
+        return u_id
 
     @property
     def native_value(self):
         """Return the native value of the sensor."""
-        return f"{DOMAIN}_{self.fraction.name.lower().replace(' ', '_')}_{self.agreement_id}"
+        return "2023-03-26"
 
     @property
     def device_info(self):

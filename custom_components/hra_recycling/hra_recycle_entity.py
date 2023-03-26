@@ -6,7 +6,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, NAME, VERSION, ATTRIBUTION
 
 
-class Entity(CoordinatorEntity):
+class HraRecycleEntity(CoordinatorEntity):
     """The Entity"""
 
     _attr_attribution = ATTRIBUTION

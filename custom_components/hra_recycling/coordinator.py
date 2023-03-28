@@ -30,7 +30,10 @@ class HraDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.client.async_verify_address()
+            # We should run a test here to check if the agreement id has been fetched.
+            if not self.client.agreement_id:
+                await self.client.async_verify_address()
+            return await self.client.async_retrieve_fraction_data()
         except ApiClientAuthenticationError as exception:
             raise ConfigEntryAuthFailed(exception) from exception
         except ApiClientError as exception:

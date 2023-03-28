@@ -7,7 +7,7 @@ from datetime import timedelta
 NAME = "HRA Recycling"
 DOMAIN = "hra_recycling"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.1"
+VERSION = "0.1.0"
 ATTRIBUTION = "Data scraped from https://hra.no/"
 ISSUE_URL = "https://github.com/mr-raw/hra_recycling/issues"
 

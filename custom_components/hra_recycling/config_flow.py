@@ -25,7 +25,13 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # Check if the address is correct here
             valid = await self._check_if_address_is_correct(user_input[CONF_ADDRESS])
             if valid:
-                return await self.async_step_agreement()
+                return self.async_create_entry(
+                    title=self.api_client.address,
+                    data={
+                        "address": self.api_client.address,
+                        "agreement_id": self.api_client.agreement_id,
+                    },
+                )
             else:  # The address is not correct
                 self._errors["base"] = "invalid_address"
 
@@ -43,32 +49,20 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             session = async_create_clientsession(self.hass)
             client = ApiClient(address, session)
             temp = await client.async_verify_address()
-            if len(temp) == 1:
-                client.agreement_id = temp[0].get("agreementGuid")
-                self.api_client = client
-                return True
+            # Original code:
+            # if len(temp) == 1:
+            #     client.agreement_id = temp[0].get("agreementGuid")
+            #     self.api_client = client
+            #     return True
+            # TODO: This does not check how many results, only return the first.
+            # We should probably do some more with this. Maybe show the results and make
+            # the user choose the correct one.
+            client.agreement_id = temp[0].get("agreementGuid")
+            self.api_client = client
+            return True
         except Exception:  # pylint: disable=broad-except
             pass
         return False
-
-    async def async_step_agreement(self, user_input=None):
-        """Handle the agreement step."""
-        if user_input is not None:
-            return self.async_create_entry(
-                title=self.api_client.address,
-                data={
-                    "address": self.api_client.address,
-                    "agreement_id": self.api_client.agreement_id,
-                },
-            )
-
-        return self.async_show_form(
-            step_id="agreement",
-            description_placeholders={
-                "agreementGuid": self.api_client.agreement_id,
-            },
-            data_schema=vol.Schema({}),
-        )
 
     async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""

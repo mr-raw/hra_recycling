@@ -8,13 +8,6 @@
                 "data": {
                     "address": "Adresse"
                 }
-            },
-            "agreement": {
-                "title": "Avtaledetaljer",
-                "description": "Avtaleid for den oppgitte adressen er: {agreementGuid}.",
-                "data": {
-                    "confirm": "Bekreft"
-                }
             }
         },
         "error": {

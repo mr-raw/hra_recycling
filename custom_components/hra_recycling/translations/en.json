@@ -8,13 +8,6 @@
                 "data": {
                     "address": "Address"
                 }
-            },
-            "agreement": {
-                "title": "Agreement Details",
-                "description": "Agreement GUID for the provided address is: {agreementGuid}.",
-                "data": {
-                    "confirm": "Confirm"
-                }
             }
         },
         "error": {

@@ -4,7 +4,7 @@
         "step": {
             "user": {
                 "title": "Configure HRA Recycling",
-                "description": "If you need help with configuration, take a look here: https://github.com/mr-raw/hra_recycling",
+                "description": "Enter your address in the following format: \"Rådhusvegen 39,2770 JAREN\"If you need help with configuration, take a look here: https://github.com/mr-raw/hra_recycling",
                 "data": {
                     "address": "Address"
                 }

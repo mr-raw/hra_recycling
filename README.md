@@ -10,13 +10,10 @@ This is a Home Assistant integration for the Norwegian waste collection company 
 
 ## Installation
 
-This integration is currently in development. It will not work if you try it right now. It will not work until I release 0.1.0.
+This integration is currently in development. Basic functionality is up and running. Please create an issue if you encounter bugs.
 
 Version plans
-- [ ] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around :)
-
-> More info to come.
-
+- [x] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around.
 - [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 
 #### Setup and configuration is done in the UI

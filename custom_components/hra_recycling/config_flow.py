@@ -32,8 +32,7 @@ class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         "agreement_id": self.api_client.agreement_id,
                     },
                 )
-            else:  # The address is not correct
-                self._errors["base"] = "invalid_address"
+            self._errors["base"] = "invalid_address"
 
             return await self._show_config_form(user_input)
 

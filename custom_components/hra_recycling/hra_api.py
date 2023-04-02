@@ -1,19 +1,12 @@
 """hra_api.py"""
 from collections import defaultdict
 from datetime import datetime
-import asyncio
-import socket
-import aiohttp
-import async_timeout
+from typing import Any, Dict, List
+
 import httpx
 from bs4 import BeautifulSoup
-from .const import LOGGER
 
-
-# https://api.hra.no//search/address?query=R%C3%A5dhusvegen%2039,%202770%20JAREN
-
-TIMEOUT = 10
-HEADERS = {"Content-type": "application/json; charset=UTF-8"}
+# HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
 class ApiClientError(Exception):
@@ -24,75 +17,72 @@ class ApiClientCommunicationError(ApiClientError):
     """Exception to indicate a communication error."""
 
 
-class ApiClientAuthenticationError(ApiClientError):
+class ApiClientNoPickupDataFound(ApiClientError):
     """Exception to indicate an authentication error."""
 
 
-class ApiClient:
+class HraApiClient:
     """ApiClient()"""
 
-    def __init__(self, address: str, session: aiohttp.ClientSession) -> None:
+    def __init__(self, address: str) -> None:
         """HRA API Client"""
         self.address = address
-        self._session = session
         self.agreement_id: str = ""
         self.agreement_data: dict = {}
         self.pickup_data: dict = {}
 
     async def async_verify_address(self) -> str:
         """Verify that the provided address is valid."""
+        if self.address == "":
+            raise ApiClientError("The address field is empty.")
         url = f"https://api.hra.no/search/address?query={self.address}"
         data = await self._get_agreement_id_from_address(url)
-        self.agreement_data = data[0]
-        self.agreement_id = data[0]["agreementGuid"]
         self.address = data[0]["name"]
+        self.agreement_id = data[0]["agreementGuid"]
+        self.agreement_data = data[0]
         return data
 
     async def _get_agreement_id_from_address(self, url: str) -> str:
         """Get information from the API."""
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(url, timeout=10)
+            except httpx.TimeoutException as esc:
+                raise ApiClientCommunicationError("Request timed out") from esc
+            if response.status_code == 401:
+                raise ApiClientNoPickupDataFound("Authentication error")
+            return response.json()
 
-        try:
-            async with async_timeout.timeout(TIMEOUT):
-                resp = await self._session.get(url)
+    async def async_retrieve_fraction_data(self) -> Dict[str, Any]:
+        """
+        Get fraction data and update the pickup_data attribute with the retrieved data.
 
-            if resp.status == 401:
-                raise ApiClientAuthenticationError("Authentication error")
-            return await resp.json()
+        Returns:
+            data (Dict[str, Any]): The retrieved fraction data.
+        """
+        self.pickup_data = await self._get_fraction_data()
+        return self.pickup_data
 
-        except asyncio.TimeoutError as exception:
-            LOGGER.error(
-                "Timeout error fetching information from %s - %s",
-                url,
-                exception,
-            )
+    async def _get_fraction_data(self) -> List[Dict[str, Any]]:
+        """
+        Retrieve fraction data using the instance's address and agreement_id attributes.
 
-        except (KeyError, TypeError) as exception:
-            LOGGER.error(
-                "Error parsing information from %s - %s",
-                url,
-                exception,
-            )
+        Returns:
+            List[Dict[str, Any]]: A list containing the processed data as a dictionary.
 
-        except (aiohttp.ClientError, socket.gaierror) as exception:
-            LOGGER.error(
-                "Error fetching information from %s - %s",
-                url,
-                exception,
-            )
-        except Exception as exception:  # pylint: disable=broad-except
-            LOGGER.error("Something really wrong happened! - %s", exception)
+        Raises:
+            ApiClientError: If the address or agreementID fields are empty.
+        """
+        if self.address == "":
+            raise ApiClientError("The address field is empty.")
+        if self.agreement_id == "":
+            raise ApiClientError("The agreementID field is empty.")
 
-    async def async_retrieve_fraction_data(self):
-        """Get fraction data"""
-        data = await self._get_fraction_data(self.agreement_id)
-        self.pickup_data = data
-        return data
-
-    async def _get_fraction_data(self, uid: str):
-        """Actually retrieve data using the uid provied"""
-        address = self.address
-        uid = self.agreement_id  # We need to add error handling here
-        url = f"https://hra.no/tommekalender/?query={address}&agreement={uid}"
+        url = (
+            f"https://hra.no/tommekalender/?"
+            f"query={self.address}&"
+            f"agreement={self.agreement_id}"
+        )
         html_doc = await self.download_html_file(url)
         processed_data = await self.process_html_code(html_doc)
         return [processed_data]
@@ -111,9 +101,7 @@ class ApiClient:
         """Process the HTML into json"""
         soup = BeautifulSoup(html_code, "html.parser")
         address = soup.find("h3").text
-
         garbage_retrieval_rows = soup.find_all(class_="garbage-retrieval-row")
-
         waste_types_data = defaultdict(list)
 
         norwegian_weekdays = {

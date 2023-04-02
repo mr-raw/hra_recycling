@@ -11,7 +11,9 @@
             }
         },
         "error": {
-            "invalid_address": "Ingen hentekalender funnet på denne adressen. Prøv på nytt."
+            "invalid_address": "Ingen hentekalender funnet på denne adressen. Prøv på nytt.",
+            "comm_error": "Det oppstod en feil ved tilkobling til ekstern tjener. Prøv på nytt",
+            "unknown_error": "Det oppstod en ukjent feil. Prøv på nytt."
         }
     }
 }

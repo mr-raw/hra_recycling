@@ -11,7 +11,9 @@
             }
         },
         "error": {
-            "invalid_address": "No collection calendar found for this address. Please try again."
+            "invalid_address": "No collection calendar found for this address. Please try again.",
+            "comm_error": "There was an error communicating with the website. Please try again.",
+            "unknown_error": "There was an unknown error. Please try again."
         }
     }
 }

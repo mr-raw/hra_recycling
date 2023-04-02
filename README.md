@@ -14,6 +14,7 @@ This integration is currently in development. Basic functionality is up and runn
 
 Version plans
 - [x] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around.
+- [x] 0.1.1 Small changes to the code. Did some refactoring. Using httpx instead of aiohttp.
 - [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 
 #### Setup and configuration is done in the UI
@@ -21,10 +22,10 @@ Version plans
 ## Examples
 
 This example creates template sendor that shows how many days until pickup of the provided fraction:
-``` yaml
+```yaml
 template:
   - sensor:
-      - name: "Days until garbage pickup"
+      - name: "Days Until Matavfall"
         state: >
           {% set matavfall_date = as_timestamp(states('sensor.matavfall')) %}
           {% set days_until = ((matavfall_date - as_timestamp(now())) // 86400)|round %}

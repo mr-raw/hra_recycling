@@ -1,8 +1,10 @@
 """sensor.py"""
-from homeassistant.components.sensor import SensorEntityDescription, SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+
 from .const import DOMAIN, LOGGER, NAME, VERSION
 from .coordinator import HraDataUpdateCoordinator
 from .hra_recycle_entity import HraRecycleEntity
+from .hra_api import ApiClientError
 
 FRACTION_NAMES = tuple(
     SensorEntityDescription(
@@ -27,8 +29,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     # Get the available fractions from the coordinator data
     if coordinator.data is None or not coordinator.data[0].get("sorted_waste"):
-        LOGGER.error("No available fractions found.")
-        return
+        raise ApiClientError("No available fractions found.")
 
     # Fetch the types of fractions from the json file.
     available_fractions = coordinator.data[0]["sorted_waste"].keys()

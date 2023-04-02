@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from .const import DOMAIN, LOGGER, SCAN_INTERVAL
-from .hra_api import ApiClient, ApiClientAuthenticationError, ApiClientError
+from .hra_api import HraApiClient, ApiClientNoPickupDataFound, ApiClientError
 
 
 class HraDataUpdateCoordinator(DataUpdateCoordinator):
@@ -19,7 +19,7 @@ class HraDataUpdateCoordinator(DataUpdateCoordinator):
 
     config_entry = ConfigEntry
 
-    def __init__(self, hass: HomeAssistant, client: ApiClient) -> None:
+    def __init__(self, hass: HomeAssistant, client: HraApiClient) -> None:
         """Initialize."""
         self.client = client
 
@@ -34,7 +34,7 @@ class HraDataUpdateCoordinator(DataUpdateCoordinator):
             if not self.client.agreement_id:
                 await self.client.async_verify_address()
             return await self.client.async_retrieve_fraction_data()
-        except ApiClientAuthenticationError as exception:
+        except ApiClientNoPickupDataFound as exception:
             raise ConfigEntryAuthFailed(exception) from exception
         except ApiClientError as exception:
             raise UpdateFailed(exception) from exception

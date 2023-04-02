@@ -1,9 +1,10 @@
 """config_flow.py"""
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
-import voluptuous as vol
-from .hra_api import ApiClient
+
 from .const import CONF_ADDRESS, DOMAIN
+from .hra_api import ApiClient
 
 
 class HRAConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

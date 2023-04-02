@@ -1,5 +1,6 @@
 """sensor.py"""
-from homeassistant.components.sensor import SensorEntityDescription, SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+
 from .const import DOMAIN, LOGGER, NAME, VERSION
 from .coordinator import HraDataUpdateCoordinator
 from .hra_recycle_entity import HraRecycleEntity

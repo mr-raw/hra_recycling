@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
     UpdateFailed,
 )
 
-from homeassistant.exceptions import ConfigEntryAuthFailed
 from .const import DOMAIN, LOGGER, SCAN_INTERVAL
-from .hra_api import ApiClient, ApiClientError, ApiClientAuthenticationError
+from .hra_api import ApiClient, ApiClientAuthenticationError, ApiClientError
 
 
 class HraDataUpdateCoordinator(DataUpdateCoordinator):

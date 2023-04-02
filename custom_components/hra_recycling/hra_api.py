@@ -1,14 +1,15 @@
 """hra_api.py"""
-from collections import defaultdict
-from datetime import datetime
 import asyncio
 import socket
+from collections import defaultdict
+from datetime import datetime
+
 import aiohttp
 import async_timeout
 import httpx
 from bs4 import BeautifulSoup
-from .const import LOGGER
 
+from .const import LOGGER
 
 # https://api.hra.no//search/address?query=R%C3%A5dhusvegen%2039,%202770%20JAREN
 

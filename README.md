@@ -21,14 +21,14 @@ Version plans
 ## Examples
 
 This example creates template sendor that shows how many days until pickup of the provided fraction:
-``` yaml
+```yaml
 template:
   - sensor:
-      - name: "Days until garbage pickup"
+      - name: "Days Until Matavfall"
         state: >
-          {% set matavfall_date = as_timestamp(states('sensor.matavfall')) %}
+          {% raw %}{% set matavfall_date = as_timestamp(states('sensor.matavfall')) %}
           {% set days_until = ((matavfall_date - as_timestamp(now())) // 86400)|round %}
-          In {{ days_until }} days
+          In {{ days_until }} days{% endraw %}
 ```
 
 This example sends a notification to your cellphone at 18:00 the day before the date in the provided fraction sensor:

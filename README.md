@@ -36,20 +36,21 @@ This example sends a notification to your cellphone at 18:00 the day before the 
 
 ``` yaml
 automation:
-  - alias: Notify Day Before Restavfall
-    description: Sends a notification at 18:00 the day before the date specified in sensor.restavfall
+  - alias: Notify the day before garbage pickup
+    description: Sends a notification at 18:00 the day before the date specified in the sensor
     trigger:
       - platform: time
         at: "18:00:00"
     condition:
       - condition: template
-        value_template: "{{ (as_timestamp(now()) + 86400)|timestamp_custom('%Y-%m-%d') == states('sensor.restavfall')[0:10] }}"
+        value_template: "{{ (as_timestamp(now()) + 86400)|timestamp_custom('%Y-%m-%d') == states('sensor.<fraction_name>') }}"
     action:
-      - service: notify.mobile_app_erik_sin_iphone
+      - service: notify.<mobile_phone>
         data:
-          message: "Reminder: Restavfall pickup is tomorrow."
-          title: "Restavfall Pickup Reminder"
+          message: "Reminder: Garbage pickup is tomorrow."
+          title: "Pickup Reminder"
     mode: single
+
 ```
 
 ## Contact

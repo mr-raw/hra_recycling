@@ -1,7 +1,7 @@
 """hra_api.py"""
 from collections import defaultdict
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import httpx
 from bs4 import BeautifulSoup
@@ -63,7 +63,7 @@ class HraApiClient:
         self.pickup_data = await self._get_fraction_data()
         return self.pickup_data
 
-    async def _get_fraction_data(self) -> List[Dict[str, Any]]:
+    async def _get_fraction_data(self) -> Dict[str, Any]:
         """
         Retrieve fraction data using the instance's address and agreement_id attributes.
 
@@ -85,7 +85,7 @@ class HraApiClient:
         )
         html_doc = await self.download_html_file(url)
         processed_data = await self.process_html_code(html_doc)
-        return [processed_data]
+        return processed_data
 
     async def download_html_file(self, url: str) -> str:
         """

@@ -15,6 +15,7 @@ This integration is currently in development. Basic functionality is up and runn
 Version plans
 - [x] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around.
 - [x] 0.1.1 Small changes to the code. Did some refactoring. Using httpx instead of aiohttp.
+- [ ] 0.1.2 Fixed a templating issue in the README. Preparing for more customization in the setup process.
 - [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 
 #### Setup and configuration is done in the UI
@@ -25,14 +26,14 @@ This example creates template sendor that shows how many days until pickup of th
 ```yaml
 template:
   - sensor:
-      - name: "Days Until Matavfall"
+      - name: "Days Until Garbage Pickup"
         state: >
-          {% set matavfall_date = as_timestamp(states('sensor.matavfall')) %}
-          {% set days_until = ((matavfall_date - as_timestamp(now())) // 86400)|round %}
+          {% set garbage_pickup_date = as_timestamp(states('sensor.restavfall')) %}
+          {% set days_until = (garbage_pickup_date - as_timestamp(now())) // 86400)|round %}
           In {{ days_until }} days
 ```
 
-This example sends a notification to your cellphone at 18:00 the day before the date in the provided fraction sensor:
+This example sends a notification to your cellphone at 18:00 the day before the date in the provided fraction sensor (Remember to change the name of the mobile phone entity):
 
 ``` yaml
 automation:
@@ -43,7 +44,7 @@ automation:
         at: "18:00:00"
     condition:
       - condition: template
-        value_template: "{{ (as_timestamp(now()) + 86400)|timestamp_custom('%Y-%m-%d') == states('sensor.<fraction_name>') }}"
+        value_template: "{{ (as_timestamp(now()) + 86400)|timestamp_custom('%Y-%m-%d') == states('sensor.restavfall')[0:10] }}"
     action:
       - service: notify.<mobile_phone>
         data:

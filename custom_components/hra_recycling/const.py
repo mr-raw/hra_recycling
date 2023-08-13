@@ -7,12 +7,13 @@ from logging import Logger, getLogger
 NAME = "HRA Recycling"
 DOMAIN = "hra_recycling"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.1.0"
+VERSION = "0.1.2"
 ATTRIBUTION = "Data scraped from https://hra.no/"
 ISSUE_URL = "https://github.com/mr-raw/hra_recycling/issues"
 
 LOGGER: Logger = getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=3600)
+
 
 # Platforms
 SENSOR = "sensor"

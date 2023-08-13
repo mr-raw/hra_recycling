@@ -72,6 +72,7 @@ class HRARecyclingSensor(HraRecycleEntity, SensorEntity):
 
     @property
     def unique_id(self):
+        """The unique id"""
         key = self._fraction.key
         agreement_id = self._agreement_id
         u_id = f"{DOMAIN}_{key}_{agreement_id}"
@@ -98,7 +99,7 @@ class HRARecyclingSensor(HraRecycleEntity, SensorEntity):
             "name": NAME,
             "manufacturer": NAME,
             "model": f"{DOMAIN} {VERSION}",
-            "version": VERSION,
+            # "version": VERSION, Removed 12.08.23
         }
 
     @property
@@ -113,6 +114,7 @@ class HRARecyclingSensor(HraRecycleEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self):
+        """Extra State Attributes"""
         if self.coordinator.data is None:
             return
         return {

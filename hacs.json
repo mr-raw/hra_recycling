@@ -1,6 +1,6 @@
 {
     "name": "HRA Recycling",
-    "homeassistant": "2022.2.0",
+    "homeassistant": "2024.3.0",
     "render_readme": true,
     "zip_release": true,
     "filename": "hra_recycling.zip",

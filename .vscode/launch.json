@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Python: Home Assistant",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "homeassistant",
             "args": [

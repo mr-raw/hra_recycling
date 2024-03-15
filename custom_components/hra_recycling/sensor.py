@@ -27,7 +27,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     entities.append(HRAGarbagePickupDateSensor(coordinator=coordinator))
     # Add the days until garbage pickup sensor.
     entities.append(HRADaysUntilGarbagePickupSensor(coordinator=coordinator))
-    # Add the fractions on first pickup sensor. Returns a comma separated list of fractions.
+    # Add the fractions on first pickup sensor.
+    # Returns a comma separated list of fractions.
     entities.append(HRAFractionsOnFirstPickupSensor(coordinator=coordinator))
 
     # Add the sensors to the platform.
@@ -202,7 +203,8 @@ class HRAFractionsOnFirstPickupSensor(HraRecycleEntity, SensorEntity):
         # List to store the names of fractions that match the first pickup date
         fractions = []
 
-        # Iterate through the sorted waste data and check for dates that match the first pickup date
+        # Iterate through the sorted waste data and check
+        # for dates that match the first pickup date
         for fraction_name, dates in sorted_waste.items():
             if any(date.date() == first_pickup_date for date in dates):
                 fractions.append(fraction_name)

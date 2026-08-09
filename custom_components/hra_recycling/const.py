@@ -5,7 +5,7 @@ from logging import Logger, getLogger
 DOMAIN = "hra_recycling"
 NAME = "HRA Recycling"
 MANUFACTURER = "HRA"
-VERSION = "0.7.0"
+VERSION = "0.7.1"
 ATTRIBUTION = "Data provided by api.hra.no"
 
 LOGGER: Logger = getLogger(__package__)

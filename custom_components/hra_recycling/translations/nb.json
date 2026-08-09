@@ -16,7 +16,8 @@
           "weeks": "Antall uker med hentinger som hentes"
         },
         "data_description": {
-          "weeks": "Hvor langt fram planen hentes. Påvirker kalenderen; sensorene viser uansett bare neste henting."
+          "weeks": "Hvor langt fram planen hentes. Påvirker kalenderen; sensorene viser uansett bare neste henting.",
+          "enable_calendar": "Lager en kalenderentitet med alle kommende hentinger som heldagsoppføringer."
         }
       }
     },
@@ -39,7 +40,8 @@
         },
         "data_description": {
           "tracked_fractions": "Det lages én sensor per valgte fraksjon. Fjerner du en, slettes sensoren.",
-          "weeks": "Hvor langt fram planen hentes. Påvirker kalenderen; sensorene viser uansett bare neste henting."
+          "weeks": "Hvor langt fram planen hentes. Påvirker kalenderen; sensorene viser uansett bare neste henting.",
+          "enable_calendar": "Lager en kalenderentitet med alle kommende hentinger som heldagsoppføringer."
         }
       }
     },

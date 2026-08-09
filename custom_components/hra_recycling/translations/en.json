@@ -16,7 +16,8 @@
           "weeks": "Weeks of pickups to fetch"
         },
         "data_description": {
-          "weeks": "How far ahead the schedule is fetched. Affects the calendar; the sensors only ever show the next pickup."
+          "weeks": "How far ahead the schedule is fetched. Affects the calendar; the sensors only ever show the next pickup.",
+          "enable_calendar": "Creates a calendar entity holding every upcoming pickup as an all-day event."
         }
       }
     },
@@ -39,7 +40,8 @@
         },
         "data_description": {
           "tracked_fractions": "One sensor is created per selected fraction. Unselecting one removes its sensor.",
-          "weeks": "How far ahead the schedule is fetched. Affects the calendar; the sensors only ever show the next pickup."
+          "weeks": "How far ahead the schedule is fetched. Affects the calendar; the sensors only ever show the next pickup.",
+          "enable_calendar": "Creates a calendar entity holding every upcoming pickup as an all-day event."
         }
       }
     },

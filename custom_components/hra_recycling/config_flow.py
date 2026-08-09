@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
+from homeassistant.helpers.translation import async_get_translations
 
 from .const import (
     CONF_ADDRESS,
@@ -20,6 +21,33 @@ from .const import (
 )
 from .hra_api import HraApiClient, HraApiError
 from .options import calendar_enabled, configured_weeks, tracked_fractions
+
+
+async def _fraction_options(
+    hass: HomeAssistant, available: list[str]
+) -> list[selector.SelectOptionDict]:
+    """Label the fractions with the same names their sensors carry.
+
+    The API returns Norwegian labels, so without this the checkboxes would stay
+    Norwegian in every other language while the sensors were translated.
+    """
+    translations = await async_get_translations(
+        hass, hass.config.language, "entity", {DOMAIN}
+    )
+
+    options = [
+        selector.SelectOptionDict(
+            value=fraction,
+            label=translations.get(
+                f"component.{DOMAIN}.entity.sensor.{WASTE_TYPES[fraction]}.name",
+                fraction,
+            )
+            if fraction in WASTE_TYPES
+            else fraction,
+        )
+        for fraction in available
+    ]
+    return sorted(options, key=lambda option: option["label"])
 
 
 def _weeks_selector() -> selector.NumberSelector:
@@ -144,7 +172,7 @@ class HraOptionsFlow(config_entries.OptionsFlow):
                     default=current.get(CONF_TRACKED_FRACTIONS, available),
                 ): selector.SelectSelector(
                     selector.SelectSelectorConfig(
-                        options=available,
+                        options=await _fraction_options(self.hass, available),
                         multiple=True,
                         mode=selector.SelectSelectorMode.LIST,
                     )

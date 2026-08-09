@@ -39,6 +39,7 @@ Version plans
 - [x] 0.1.2 Fixed a templating issue in the README. Preparing for more customization in the setup process.
 - [x] 0.4.0 Switched from HTML scraping to the JSON API. Added the pickup calendar and translated entity names.
 - [x] 0.5.0 Sensors are proper `date` entities, `days_until` refreshes at midnight, options can be changed after setup, and one address can only be added once.
+- [x] 0.6.0 Entities keep serving the last known schedule when a refresh fails, with a shorter retry after an error. Modernised internals: `runtime_data`, an explicit coordinator config entry, a shared base entity, `icons.json` and diagnostics.
 - [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
 
 ## Examples

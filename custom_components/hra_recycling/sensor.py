@@ -1,7 +1,7 @@
 """Sensor platform for HRA Recycling."""
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -9,43 +9,43 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.event import async_track_time_change
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
-from .const import ATTRIBUTION, DEFAULT_ICON, DOMAIN, WASTE_TYPES
-from .coordinator import HraCoordinator
+from .const import DEFAULT_ICON, DOMAIN, WASTE_TYPES
+from .coordinator import HraConfigEntry, HraCoordinator
+from .entity import HraEntity
+
+PARALLEL_UPDATES = 0
 
 
 def _describe(waste_type: str) -> SensorEntityDescription:
     """Build the entity description for a waste type."""
-    config = WASTE_TYPES.get(waste_type)
-    if config:
-        translation_key, icon, legacy_key = config
-    else:
-        # Unknown waste type - generate key from name
-        legacy_key = waste_type.lower().replace(" ", "_").replace(",", "").replace("-", "_")
-        translation_key = legacy_key
-        icon = DEFAULT_ICON
+    if translation_key := WASTE_TYPES.get(waste_type):
+        return SensorEntityDescription(
+            key=translation_key,
+            translation_key=translation_key,
+            device_class=SensorDeviceClass.DATE,
+        )
 
+    # Unknown fraction: no translation exists, so fall back to the API label.
+    key = waste_type.lower().replace(" ", "_").replace(",", "").replace("-", "_")
     return SensorEntityDescription(
-        key=legacy_key,
-        translation_key=translation_key,
-        icon=icon,
+        key=key,
+        name=waste_type,
+        icon=DEFAULT_ICON,
         device_class=SensorDeviceClass.DATE,
     )
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: HraConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up HRA sensors from config entry."""
-    coordinator: HraCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
     # Always create the known waste types, even if this refresh returned nothing,
     # so an empty response never silently leaves the integration without entities.
@@ -69,11 +69,8 @@ async def async_setup_entry(
     entry.async_on_unload(coordinator.async_add_listener(_add_new_waste_types))
 
 
-class HraSensor(CoordinatorEntity[HraCoordinator], SensorEntity):
+class HraSensor(HraEntity, SensorEntity):
     """Sensor for a waste type pickup date."""
-
-    _attr_has_entity_name = True
-    _attr_attribution = ATTRIBUTION
 
     entity_description: SensorEntityDescription
 
@@ -88,21 +85,6 @@ class HraSensor(CoordinatorEntity[HraCoordinator], SensorEntity):
         self.entity_description = description
         self._waste_type = waste_type
         self._attr_unique_id = f"{DOMAIN}_{coordinator.client.agreement_id}_{description.key}"
-        self._attr_device_info = coordinator.device_info
-
-    async def async_added_to_hass(self) -> None:
-        """Register a midnight refresh so days_until never goes stale."""
-        await super().async_added_to_hass()
-        self.async_on_remove(
-            async_track_time_change(
-                self.hass, self._handle_midnight, hour=0, minute=0, second=0
-            )
-        )
-
-    @callback
-    def _handle_midnight(self, now: datetime) -> None:
-        """Rewrite the state at the day boundary to recompute days_until."""
-        self.async_write_ha_state()
 
     @property
     def _next_pickup(self) -> date | None:

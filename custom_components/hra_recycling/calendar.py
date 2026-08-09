@@ -4,20 +4,20 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from homeassistant.components.calendar import CalendarEntity, CalendarEvent
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.event import async_track_time_change
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
-from .const import ATTRIBUTION, CONF_ENABLE_CALENDAR, DOMAIN
-from .coordinator import HraCoordinator
+from .const import CONF_ENABLE_CALENDAR, DOMAIN
+from .coordinator import HraConfigEntry, HraCoordinator
+from .entity import HraEntity
+
+PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: HraConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up HRA calendar from config entry."""
@@ -28,36 +28,18 @@ async def async_setup_entry(
     if not enabled:
         return
 
-    coordinator: HraCoordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([HraCalendar(coordinator)])
+    async_add_entities([HraCalendar(entry.runtime_data)])
 
 
-class HraCalendar(CoordinatorEntity[HraCoordinator], CalendarEntity):
+class HraCalendar(HraEntity, CalendarEntity):
     """Calendar showing all waste pickup dates."""
 
-    _attr_has_entity_name = True
-    _attr_attribution = ATTRIBUTION
     _attr_translation_key = "pickup_calendar"
 
     def __init__(self, coordinator: HraCoordinator) -> None:
         """Initialize calendar."""
         super().__init__(coordinator)
         self._attr_unique_id = f"{DOMAIN}_{coordinator.client.agreement_id}_calendar"
-        self._attr_device_info = coordinator.device_info
-
-    async def async_added_to_hass(self) -> None:
-        """Refresh at midnight so the next event rolls over on time."""
-        await super().async_added_to_hass()
-        self.async_on_remove(
-            async_track_time_change(
-                self.hass, self._handle_midnight, hour=0, minute=0, second=0
-            )
-        )
-
-    @callback
-    def _handle_midnight(self, now: datetime) -> None:
-        """Rewrite the state at the day boundary."""
-        self.async_write_ha_state()
 
     @property
     def event(self) -> CalendarEvent | None:

@@ -1,0 +1,26 @@
+{
+  "entity": {
+    "sensor": {
+      "restavfall": {
+        "default": "mdi:trash-can"
+      },
+      "matavfall": {
+        "default": "mdi:food-apple"
+      },
+      "papir_papp_kartong": {
+        "default": "mdi:newspaper"
+      },
+      "plastemballasje": {
+        "default": "mdi:bottle-soda"
+      },
+      "glass_metall": {
+        "default": "mdi:bottle-wine"
+      }
+    },
+    "calendar": {
+      "pickup_calendar": {
+        "default": "mdi:calendar-month"
+      }
+    }
+  }
+}

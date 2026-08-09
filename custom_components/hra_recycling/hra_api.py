@@ -1,166 +1,93 @@
-"""hra_api.py"""
+"""HRA API Client."""
 from collections import defaultdict
 from datetime import datetime
-from typing import Any, Dict
 
 import httpx
-from bs4 import BeautifulSoup
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.httpx_client import get_async_client
 
-# HEADERS = {"Content-type": "application/json; charset=UTF-8"}
-
-
-class ApiClientError(Exception):
-    """Exception to indicate a general API error."""
+BASE_URL = "https://api.hra.no"
+DEFAULT_WEEKS = 12
 
 
-class ApiClientCommunicationError(ApiClientError):
-    """Exception to indicate a communication error."""
-
-
-class ApiClientNoPickupDataFound(ApiClientError):
-    """Exception to indicate an authentication error."""
+class HraApiError(Exception):
+    """Base exception for HRA API errors."""
 
 
 class HraApiClient:
-    """ApiClient()"""
+    """Client for HRA Recycling API."""
 
-    def __init__(self, address: str) -> None:
-        """HRA API Client"""
-        self.address = address
+    def __init__(self, hass: HomeAssistant, address: str) -> None:
+        self._hass = hass
+        self._address = address
         self.agreement_id: str = ""
-        self.agreement_data: dict = {}
-        self.pickup_data: dict = {}
 
-    async def async_verify_address(self) -> str:
-        """Verify that the provided address is valid."""
-        if self.address == "":
-            raise ApiClientError("The address field is empty.")
-        url = f"https://api.hra.no/search/address?query={self.address}"
-        data = await self._get_agreement_id_from_address(url)
-        self.address = data[0]["name"]
-        self.agreement_id = data[0]["agreementGuid"]
-        self.agreement_data = data[0]
-        return data
+    @property
+    def address(self) -> str:
+        return self._address
 
-    async def _get_agreement_id_from_address(self, url: str) -> str:
-        """Get information from the API."""
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.get(url, timeout=10)
-            except httpx.TimeoutException as esc:
-                raise ApiClientCommunicationError("Request timed out") from esc
-            if response.status_code == 401:
-                raise ApiClientNoPickupDataFound("Authentication error")
-            return response.json()
+    async def async_resolve_address(self) -> str:
+        """Resolve the configured address and return the agreement ID."""
+        await self._fetch_agreement_id()
+        return self.agreement_id
 
-    async def async_retrieve_fraction_data(self) -> Dict[str, Any]:
-        """
-        Get fraction data and update the pickup_data attribute with the retrieved data.
+    async def async_get_pickup_data(self) -> dict:
+        """Fetch and return pickup data."""
+        if not self.agreement_id:
+            await self._fetch_agreement_id()
+        return await self._fetch_pickup_schedule()
 
-        Returns:
-            data (Dict[str, Any]): The retrieved fraction data.
-        """
-        self.pickup_data = await self._get_fraction_data()
-        return self.pickup_data
+    async def _fetch_agreement_id(self) -> None:
+        """Fetch agreement ID from address."""
+        if not self._address:
+            raise HraApiError("Address is empty")
 
-    async def _get_fraction_data(self) -> Dict[str, Any]:
-        """
-        Retrieve fraction data using the instance's address and agreement_id attributes.
+        client = get_async_client(self._hass)
+        url = f"{BASE_URL}/search/address?query={self._address}"
 
-        Returns:
-            List[Dict[str, Any]]: A list containing the processed data as a dictionary.
-
-        Raises:
-            ApiClientError: If the address or agreementID fields are empty.
-        """
-        if self.address == "":
-            raise ApiClientError("The address field is empty.")
-        if self.agreement_id == "":
-            raise ApiClientError("The agreementID field is empty.")
-
-        url = (
-            f"https://hra.no/tommekalender/?"
-            f"query={self.address}&"
-            f"agreement={self.agreement_id}"
-        )
-        html_doc = await self.download_html_file(url)
-        processed_data = await self.process_html_code(html_doc)
-        return processed_data
-
-    async def download_html_file(self, url: str) -> str:
-        """
-        Fetches the HTML of a given URL using an async httpx client.
-        Raises an error if the response is not valid.
-        """
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url)
+        try:
+            response = await client.get(url, timeout=10)
             response.raise_for_status()
-            return response.text
+        except httpx.TimeoutException as err:
+            raise HraApiError("Request timed out") from err
+        except httpx.HTTPStatusError as err:
+            raise HraApiError(f"HTTP error: {err.response.status_code}") from err
 
-    async def process_html_code(self, html_code: str) -> dict:
-        """Process the HTML into json"""
-        soup = BeautifulSoup(html_code, "html.parser")
-        address = soup.find("h3").text
-        garbage_retrieval_rows = soup.find_all(class_="garbage-retrieval-row")
-        waste_types_data = defaultdict(list)
+        data = response.json()
+        if not data:
+            raise HraApiError("Address not found")
 
-        norwegian_weekdays = {
-            "Mandag": "Monday",
-            "Tirsdag": "Tuesday",
-            "Onsdag": "Wednesday",
-            "Torsdag": "Thursday",
-            "Fredag": "Friday",
-            "Lørdag": "Saturday",
-            "Søndag": "Sunday",
-        }
+        self._address = data[0]["name"]
+        self.agreement_id = data[0]["agreementGuid"]
 
-        norwegian_months = {
-            "jan": "Jan",
-            "feb": "Feb",
-            "mar": "Mar",
-            "apr": "Apr",
-            "mai": "May",
-            "jun": "Jun",
-            "jul": "Jul",
-            "aug": "Aug",
-            "sep": "Sep",
-            "okt": "Oct",
-            "nov": "Nov",
-            "des": "Dec",
-        }
+    async def _fetch_pickup_schedule(self) -> dict:
+        """Fetch pickup schedule from JSON API."""
+        client = get_async_client(self._hass)
+        url = f"{BASE_URL}/Renovation/UpcomingGarbageDisposals/{self.agreement_id}?weeks={DEFAULT_WEEKS}"
 
-        date_format = "%A %d. %b"
-        today = datetime.now()
+        try:
+            response = await client.get(url, timeout=10)
+            response.raise_for_status()
+        except httpx.TimeoutException as err:
+            raise HraApiError("Request timed out") from err
+        except httpx.HTTPStatusError as err:
+            raise HraApiError(f"HTTP error: {err.response.status_code}") from err
 
-        for row in garbage_retrieval_rows:
-            day_date = row.find(class_="text-center").get_text(
-                separator=" ", strip=True
-            )
+        return self._parse_json_response(response.json())
 
-            for norwegian_day, english_day in norwegian_weekdays.items():
-                day_date = day_date.replace(norwegian_day, english_day)
+    def _parse_json_response(self, data: list) -> dict:
+        """Parse JSON response into structured data."""
+        waste_data: dict[str, list[datetime]] = defaultdict(list)
 
-            for norwegian_month, english_month in norwegian_months.items():
-                day_date = day_date.replace(norwegian_month, english_month)
+        for item in data:
+            name = item["name"]
+            date_str = item["date"]
+            # Parse ISO format date (e.g., "2026-01-20T00:00:00")
+            pickup_date = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+            waste_data[name].append(pickup_date)
 
-            date_object = datetime.strptime(day_date, date_format)
-            date_object = date_object.replace(year=today.year)
+        # Sort dates within each waste type
+        for dates in waste_data.values():
+            dates.sort()
 
-            if date_object < today:
-                date_object = date_object.replace(year=today.year + 1)
-
-            types = row.find_all(class_=["col-6", "col-md-2"])
-
-            for waste_type in types:
-                waste_name_div = waste_type.find("div")
-                if waste_name_div:
-                    waste_name = waste_name_div.text
-                    waste_types_data[waste_name].append(date_object)
-
-        sorted_waste_types_data = dict(sorted(waste_types_data.items()))
-
-        return {
-            "agreementGuid": self.agreement_id,
-            "address": address,
-            "sorted_waste": sorted_waste_types_data,
-        }
+        return dict(sorted(waste_data.items()))

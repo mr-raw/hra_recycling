@@ -1,15 +1,11 @@
 {
   "domain": "hra_recycling",
   "name": "HRA Recycling",
-  "codeowners": [
-    "@mr-raw"
-  ],
+  "codeowners": ["@mr-raw"],
   "config_flow": true,
   "documentation": "https://github.com/mr-raw/hra_recycling",
+  "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/mr-raw/hra_recycling/issues",
-  "requirements": [
-    "beautifulsoup4"
-  ],
-  "version": "0.1.2"
+  "version": "0.5.0"
 }

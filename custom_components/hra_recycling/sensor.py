@@ -1,264 +1,131 @@
-"""sensor.py"""
-from datetime import datetime, timedelta
-import json
+"""Sensor platform for HRA Recycling."""
+from __future__ import annotations
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from datetime import date, datetime
+from typing import Any
 
-from .coordinator import HraDataUpdateCoordinator
-from .const import DOMAIN, NAME, VERSION
-from .hra_recycle_entity import HraRecycleEntity
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_time_change
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
 
-
-async def async_setup_entry(hass, entry, async_add_entities):
-    """This is the async setup method"""
-    # The coordinator is initialized. The coordinator stores all the information.
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-
-    # Get the existing fraction names from the coordinator.
-    existing_fraction_names = coordinator.get_existing_fraction_names()
-
-    # Loop over the list of existing SensorEntityDescriptions and create sensors.
-    entities = [
-        HRARecyclingSensor(coordinator=coordinator, fraction=fraction_name)
-        for fraction_name in existing_fraction_names
-    ]
-
-    # Add the garbage pickup date sensor.
-    entities.append(HRAGarbagePickupDateSensor(coordinator=coordinator))
-    # Add the days until garbage pickup sensor.
-    entities.append(HRADaysUntilGarbagePickupSensor(coordinator=coordinator))
-    # Add the fractions on first pickup sensor.
-    # Returns a comma separated list of fractions.
-    entities.append(HRAFractionsOnFirstPickupSensor(coordinator=coordinator))
-
-    # Add the sensors to the platform.
-    async_add_entities(entities)
+from .const import ATTRIBUTION, DEFAULT_ICON, DOMAIN, WASTE_TYPES
+from .coordinator import HraCoordinator
 
 
-class HRARecyclingSensor(HraRecycleEntity, SensorEntity):
-    """Sensor representing HRA Recycling fraction."""
+def _describe(waste_type: str) -> SensorEntityDescription:
+    """Build the entity description for a waste type."""
+    config = WASTE_TYPES.get(waste_type)
+    if config:
+        translation_key, icon, legacy_key = config
+    else:
+        # Unknown waste type - generate key from name
+        legacy_key = waste_type.lower().replace(" ", "_").replace(",", "").replace("-", "_")
+        translation_key = legacy_key
+        icon = DEFAULT_ICON
+
+    return SensorEntityDescription(
+        key=legacy_key,
+        translation_key=translation_key,
+        icon=icon,
+        device_class=SensorDeviceClass.DATE,
+    )
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up HRA sensors from config entry."""
+    coordinator: HraCoordinator = hass.data[DOMAIN][entry.entry_id]
+
+    # Always create the known waste types, even if this refresh returned nothing,
+    # so an empty response never silently leaves the integration without entities.
+    known = set(WASTE_TYPES)
+    added: set[str] = set()
+
+    @callback
+    def _add_new_waste_types() -> None:
+        """Add entities for waste types seen for the first time."""
+        wanted = known | set(coordinator.data or {})
+        new = wanted - added
+        if not new:
+            return
+        added.update(new)
+        async_add_entities(
+            HraSensor(coordinator, waste_type, _describe(waste_type))
+            for waste_type in sorted(new)
+        )
+
+    _add_new_waste_types()
+    entry.async_on_unload(coordinator.async_add_listener(_add_new_waste_types))
+
+
+class HraSensor(CoordinatorEntity[HraCoordinator], SensorEntity):
+    """Sensor for a waste type pickup date."""
+
+    _attr_has_entity_name = True
+    _attr_attribution = ATTRIBUTION
+
+    entity_description: SensorEntityDescription
 
     def __init__(
         self,
-        coordinator: HraDataUpdateCoordinator,
-        fraction: SensorEntityDescription,
-    ):
+        coordinator: HraCoordinator,
+        waste_type: str,
+        description: SensorEntityDescription,
+    ) -> None:
         """Initialize sensor."""
         super().__init__(coordinator)
-        self._fraction = fraction
-        self._agreement_id = coordinator.client.agreement_id
-        self._agreement_data = coordinator.client.agreement_data
-        self._unique_id = f"{DOMAIN}_{fraction.key}_{coordinator.client.agreement_id}"
-        # self._pickup_data = coordinator.client.pickup_data
+        self.entity_description = description
+        self._waste_type = waste_type
+        self._attr_unique_id = f"{DOMAIN}_{coordinator.client.agreement_id}_{description.key}"
+        self._attr_device_info = coordinator.device_info
 
-    @property
-    def name(self):
-        """Return the Friendly name of the sensor."""
-        return self._fraction.name
-
-    @property
-    def unique_id(self):
-        """The unique id"""
-        return self._unique_id
-
-    @property
-    def native_value(self):
-        """Return the native value of the sensor."""
-        sorted_waste = self.coordinator.data.get("sorted_waste", {}).get(
-            "sorted_waste", {}
+    async def async_added_to_hass(self) -> None:
+        """Register a midnight refresh so days_until never goes stale."""
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            async_track_time_change(
+                self.hass, self._handle_midnight, hour=0, minute=0, second=0
+            )
         )
-        date_value = sorted_waste.get(self._fraction.name, [None])[0]
-        if date_value is not None:
-            return date_value.date()
 
-        return None
+    @callback
+    def _handle_midnight(self, now: datetime) -> None:
+        """Rewrite the state at the day boundary to recompute days_until."""
+        self.async_write_ha_state()
 
     @property
-    def device_info(self):
-        """Return device information."""
+    def _next_pickup(self) -> date | None:
+        """Return the next pickup date for this waste type."""
+        if not self.coordinator.data:
+            return None
+        dates = self.coordinator.data.get(self._waste_type, [])
+        if not dates:
+            return None
+        return dates[0].date()
+
+    @property
+    def native_value(self) -> date | None:
+        """Return the next pickup date."""
+        return self._next_pickup
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return extra attributes."""
+        pickup = self._next_pickup
+        if pickup is None:
+            return {}
         return {
-            "identifiers": {(DOMAIN, self._agreement_id)},
-            "name": NAME,
-            "manufacturer": NAME,
-            "model": f"{DOMAIN} {VERSION}",
+            "date": pickup.isoformat(),
+            "days_until": (pickup - dt_util.now().date()).days,
         }
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return "date"
-
-    @property
-    def icon(self):
-        """Return the icon of the sensor."""
-        return self._fraction.icon
-
-
-class HRAGarbagePickupDateSensor(HraRecycleEntity, SensorEntity):
-    """Sensor representing HRA Recycling garbage pickup date."""
-
-    @property
-    def name(self):
-        """Return the Friendly name of the sensor."""
-        return "Førstkommende hentedato"
-
-    @property
-    def unique_id(self):
-        """Return a unique ID for the sensor."""
-        return f"{DOMAIN}_garbage_pickup_date"
-
-    @property
-    def native_value(self):
-        """Return the native value of the sensor."""
-        return self.coordinator.data.get("first_pickup_date")
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return "date"
-
-    @property
-    def device_info(self):
-        """Return device information."""
-        return {
-            "identifiers": {(DOMAIN, self.coordinator.client.agreement_id)},
-            "name": NAME,
-            "manufacturer": NAME,
-            "model": f"{DOMAIN} {VERSION}",
-        }
-
-
-class HRADaysUntilGarbagePickupSensor(HraRecycleEntity, SensorEntity):
-    """Sensor representing days until HRA Recycling garbage pickup date."""
-
-    @property
-    def name(self):
-        """Return the Friendly name of the sensor."""
-        return "Tid fram til neste avfallshenting"
-
-    @property
-    def unique_id(self):
-        """Return a unique ID for the sensor."""
-        return f"{DOMAIN}_time_until_garbage_pickup_date"
-
-    @property
-    def native_value(self):
-        """Return the native value of the sensor."""
-        first_pickup_date = self.coordinator.data.get("first_pickup_date")
-        if first_pickup_date:
-            # Set the time to 09:00 on the pickup date
-            target_datetime = datetime.combine(
-                first_pickup_date, datetime.min.time()
-            ) + timedelta(hours=9)
-            # Calculate the difference between the current date/time and the target date/time
-            delta = target_datetime - datetime.now()
-
-            # Break down the difference into days, hours, and minutes
-            days = delta.days
-            hours, remainder = divmod(delta.seconds, 3600)
-            minutes, _ = divmod(remainder, 60)
-
-            # Return a string representation of the time difference
-            return f"{days} dager, {hours} timer, {minutes} minutter"
-        return None
-
-    @property
-    def device_info(self):
-        """Return device information."""
-        return {
-            "identifiers": {(DOMAIN, self.coordinator.client.agreement_id)},
-            "name": NAME,
-            "manufacturer": NAME,
-            "model": f"{DOMAIN} {VERSION}",
-        }
-
-    @property
-    def icon(self):
-        """Return the icon of the sensor."""
-        return "mdi:calendar-clock"
-
-
-class HRAFractionsOnFirstPickupSensor(HraRecycleEntity, SensorEntity):
-    """Sensor representing fractions picked up on HRA Recycling garbage pickup date."""
-
-    @property
-    def name(self):
-        """Return the Friendly name of the sensor."""
-        return "Fraksjoner som hentes på første hentedag"
-
-    @property
-    def unique_id(self):
-        """Return a unique ID for the sensor."""
-        return f"{DOMAIN}_fractions_on_first_pickup_date"
-
-    @property
-    def native_value(self):
-        """Return the native value of the sensor."""
-        # Getting the first pickup date from the coordinator's data
-        first_pickup_date = self.coordinator.data["first_pickup_date"]
-
-        # Getting the sorted waste data from the coordinator's data
-        sorted_waste = self.coordinator.data["sorted_waste"]["sorted_waste"]
-
-        # List to store the names of fractions that match the first pickup date
-        fractions = []
-
-        # Iterate through the sorted waste data and check
-        # for dates that match the first pickup date
-        for fraction_name, dates in sorted_waste.items():
-            if any(date.date() == first_pickup_date for date in dates):
-                fractions.append(fraction_name)
-
-        # Convert the list of fractions to a JSON string
-        fractions_json = json.dumps(fractions)
-
-        # Return the JSON string as the native value
-        return fractions_json
-
-    @property
-    def device_info(self):
-        """Return device information."""
-        return {
-            "identifiers": {(DOMAIN, self.coordinator.client.agreement_id)},
-            "name": NAME,
-            "manufacturer": NAME,
-            "model": f"{DOMAIN} {VERSION}",
-        }
-
-    @property
-    def icon(self):
-        """Return the icon of the sensor."""
-        return "mdi:recycle"
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            "first_pickup_date": self.coordinator.data.get("first_pickup_date"),
-        }
-
-    # Maybe move these attributes to separate sensors ??
-    # @property
-    # def extra_state_attributes(self):
-    # """Extra State Attributes"""
-    # if self.coordinator.data is None:
-    #     return
-    # return {
-    #     "AvtaleId": self.coordinator.client.agreement_data.get("agreementGuid"),
-    #     "Gårdsnr/bruksnr": self.coordinator.client.agreement_data.get(
-    #         "gnrBnrFnrSnr"
-    #     ),
-    #     "Husbokstav": self.coordinator.client.agreement_data.get("houseLetter"),
-    #     "Husnummer": self.coordinator.client.agreement_data.get("houseNumber"),
-    #     "Kommune": self.coordinator.client.agreement_data.get("municipality"),
-    #     "Kommunenr": self.coordinator.client.agreement_data.get(
-    #         "municipalityNumber"
-    #     ),
-    #     "Navn": self.coordinator.client.agreement_data.get("name"),
-    #     "Postnr": self.coordinator.client.agreement_data.get("postalNumber"),
-    #     "Poststed": self.coordinator.client.agreement_data.get("postalPlace"),
-    #     "EiendomsID": self.coordinator.client.agreement_data.get("propertyGuid"),
-    #     "Eiendomsnavn": self.coordinator.client.agreement_data.get("propertyName"),
-    #     "Gatenavn": self.coordinator.client.agreement_data.get("streetName"),
-    #     "Gatenummer": self.coordinator.client.agreement_data.get("streetNumber"),
-    # }

@@ -1,19 +1,61 @@
 {
-    "title": "HRA Recycling",
-    "config": {
-        "step": {
-            "user": {
-                "title": "Konfigurer HRA Recycling",
-                "description": "Skriv inn adressen din i følgende format: \"Rådhusvegen 39, 2770 JAREN\". Hvis du trenger hjep til oppsett, ta en titt her: https://github.com/mr-raw/hra_recycling",
-                "data": {
-                    "address": "Adresse"
-                }
-            }
-        },
-        "error": {
-            "invalid_address": "Ingen hentekalender funnet på denne adressen. Prøv på nytt.",
-            "comm_error": "Det oppstod en feil ved tilkobling til ekstern tjener. Prøv på nytt",
-            "unknown_error": "Det oppstod en ukjent feil. Prøv på nytt."
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfigurer HRA Recycling",
+        "description": "Skriv inn adressen din i følgende format: \"Rådhusvegen 39, 2770 JAREN\"",
+        "data": {
+          "address": "Adresse"
         }
+      },
+      "options": {
+        "title": "Innstillinger",
+        "description": "Konfigurer ekstra innstillinger for HRA Recycling.",
+        "data": {
+          "enable_calendar": "Legg til hentedatoer i Home Assistant-kalenderen"
+        }
+      }
+    },
+    "error": {
+      "invalid_address": "Ingen hentekalender funnet på denne adressen. Prøv på nytt."
+    },
+    "abort": {
+      "already_configured": "Denne adressen er allerede satt opp."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Innstillinger",
+        "description": "Konfigurer ekstra innstillinger for HRA Recycling.",
+        "data": {
+          "enable_calendar": "Legg til hentedatoer i Home Assistant-kalenderen"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "restavfall": {
+        "name": "Restavfall"
+      },
+      "matavfall": {
+        "name": "Matavfall"
+      },
+      "papir_papp_kartong": {
+        "name": "Papir, papp og kartong"
+      },
+      "plastemballasje": {
+        "name": "Plastemballasje"
+      },
+      "glass_metall": {
+        "name": "Glass- og metallemballasje"
+      }
+    },
+    "calendar": {
+      "pickup_calendar": {
+        "name": "Hentekalender"
+      }
+    }
+  }
 }

@@ -7,13 +7,16 @@ from homeassistant.core import HomeAssistant
 from .const import CONF_ADDRESS
 from .coordinator import HraConfigEntry, HraCoordinator
 from .hra_api import HraApiClient
+from .options import configured_weeks
 
 PLATFORMS = [Platform.SENSOR, Platform.CALENDAR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: HraConfigEntry) -> bool:
     """Set up HRA Recycling from config entry."""
-    client = HraApiClient(hass, entry.data[CONF_ADDRESS])
+    client = HraApiClient(
+        hass, entry.data[CONF_ADDRESS], weeks=configured_weeks(entry)
+    )
     coordinator = HraCoordinator(hass, entry, client)
 
     # Raises ConfigEntryNotReady itself when the first refresh fails.

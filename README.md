@@ -31,7 +31,11 @@ Plus an optional calendar, `calendar.hra_recycling_hentekalender`, holding every
 
 Setup and configuration is done entirely in the UI. Enter your address in the format `Rådhusvegen 39, 2770 JAREN`; the integration resolves it against the HRA API and pulls the next 12 weeks of pickups, refreshing every 6 hours.
 
-The calendar can be turned on or off during setup and changed later under **Settings → Devices & Services → HRA Recycling → Configure**.
+Under **Settings → Devices & Services → HRA Recycling → Configure** you can change:
+
+- **Fractions to track** — one sensor per selected fraction, listing whatever your address actually has a schedule for. Unselecting a fraction removes its sensor.
+- **Calendar** — on or off. Switching it off removes the calendar entity.
+- **Weeks to fetch** — 1 to 52, default 12. This sets how far ahead the calendar reaches; the sensors only ever show the next pickup.
 
 Version plans
 - [x] 0.1.0 First release. Will have basic functionality. All the fractions will be shown. User mistakes will not be accounted for. This will break the integration and throw errors around.
@@ -40,7 +44,8 @@ Version plans
 - [x] 0.4.0 Switched from HTML scraping to the JSON API. Added the pickup calendar and translated entity names.
 - [x] 0.5.0 Sensors are proper `date` entities, `days_until` refreshes at midnight, options can be changed after setup, and one address can only be added once.
 - [x] 0.6.0 Entities keep serving the last known schedule when a refresh fails, with a shorter retry after an error. Modernised internals: `runtime_data`, an explicit coordinator config entry, a shared base entity, `icons.json` and diagnostics.
-- [ ] 1.0.0 Final release. You can choose which fractions to track. The integration has been thorougly tested.
+- [x] 0.7.0 Choose which fractions to track and how many weeks to fetch, both from the options flow.
+- [ ] 1.0.0 Final release. The integration has been thorougly tested.
 
 ## Examples
 

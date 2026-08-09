@@ -6,8 +6,32 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import selector
 
-from .const import CONF_ADDRESS, CONF_ENABLE_CALENDAR, DOMAIN, LOGGER
+from .const import (
+    CONF_ADDRESS,
+    CONF_ENABLE_CALENDAR,
+    CONF_TRACKED_FRACTIONS,
+    CONF_WEEKS,
+    DEFAULT_WEEKS,
+    DOMAIN,
+    LOGGER,
+    MAX_WEEKS,
+    MIN_WEEKS,
+    WASTE_TYPES,
+)
 from .hra_api import HraApiClient, HraApiError
+from .options import calendar_enabled, configured_weeks, tracked_fractions
+
+
+def _weeks_selector() -> selector.NumberSelector:
+    """Return the selector for the fetch window."""
+    return selector.NumberSelector(
+        selector.NumberSelectorConfig(
+            min=MIN_WEEKS,
+            max=MAX_WEEKS,
+            step=1,
+            mode=selector.NumberSelectorMode.BOX,
+        )
+    )
 
 
 class HraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -55,13 +79,18 @@ class HraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_options(self, user_input: dict | None = None):
-        """Handle options step."""
+        """Handle options step.
+
+        Fractions are not offered here: which ones exist is only known once a
+        schedule has been fetched, so that choice lives in the options flow.
+        """
         if user_input is not None:
             return self.async_create_entry(
                 title=self._address,
                 data={CONF_ADDRESS: self._address},
                 options={
-                    CONF_ENABLE_CALENDAR: user_input.get(CONF_ENABLE_CALENDAR, True)
+                    CONF_ENABLE_CALENDAR: user_input[CONF_ENABLE_CALENDAR],
+                    CONF_WEEKS: int(user_input[CONF_WEEKS]),
                 },
             )
 
@@ -69,6 +98,7 @@ class HraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="options",
             data_schema=vol.Schema({
                 vol.Required(CONF_ENABLE_CALENDAR, default=True): selector.BooleanSelector(),
+                vol.Required(CONF_WEEKS, default=DEFAULT_WEEKS): _weeks_selector(),
             }),
         )
 
@@ -78,17 +108,54 @@ class HraOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input: dict | None = None):
         """Manage the options."""
-        if user_input is not None:
-            return self.async_create_entry(data=user_input)
+        entry = self.config_entry
+        coordinator = getattr(entry, "runtime_data", None)
 
-        current = self.config_entry.options.get(
-            CONF_ENABLE_CALENDAR,
-            self.config_entry.data.get(CONF_ENABLE_CALENDAR, True),
+        # Offer whatever the address actually has a schedule for.
+        available = sorted(
+            set(WASTE_TYPES) | set(getattr(coordinator, "data", None) or {})
         )
+        errors = {}
+
+        if user_input is not None:
+            if not user_input.get(CONF_TRACKED_FRACTIONS):
+                errors["base"] = "no_fractions"
+            else:
+                return self.async_create_entry(
+                    data={
+                        CONF_TRACKED_FRACTIONS: user_input[CONF_TRACKED_FRACTIONS],
+                        CONF_ENABLE_CALENDAR: user_input[CONF_ENABLE_CALENDAR],
+                        CONF_WEEKS: int(user_input[CONF_WEEKS]),
+                    }
+                )
+            current = user_input
+        else:
+            current = {
+                CONF_TRACKED_FRACTIONS: sorted(tracked_fractions(entry, available)),
+                CONF_ENABLE_CALENDAR: calendar_enabled(entry),
+                CONF_WEEKS: configured_weeks(entry),
+            }
 
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
-                vol.Required(CONF_ENABLE_CALENDAR, default=current): selector.BooleanSelector(),
+                vol.Required(
+                    CONF_TRACKED_FRACTIONS,
+                    default=current.get(CONF_TRACKED_FRACTIONS, available),
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=available,
+                        multiple=True,
+                        mode=selector.SelectSelectorMode.LIST,
+                    )
+                ),
+                vol.Required(
+                    CONF_ENABLE_CALENDAR,
+                    default=current.get(CONF_ENABLE_CALENDAR, True),
+                ): selector.BooleanSelector(),
+                vol.Required(
+                    CONF_WEEKS, default=current.get(CONF_WEEKS, DEFAULT_WEEKS)
+                ): _weeks_selector(),
             }),
+            errors=errors,
         )

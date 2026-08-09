@@ -4,15 +4,35 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from homeassistant.components.calendar import CalendarEntity, CalendarEvent
-from homeassistant.core import HomeAssistant
+from homeassistant.const import Platform
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import CONF_ENABLE_CALENDAR, DOMAIN
+from .const import DOMAIN, WASTE_TYPES
 from .coordinator import HraConfigEntry, HraCoordinator
 from .entity import HraEntity
+from .options import calendar_enabled, tracked_fractions
 
 PARALLEL_UPDATES = 0
+
+
+def _unique_id(coordinator: HraCoordinator) -> str:
+    """Return the calendar's unique ID."""
+    return f"{DOMAIN}_{coordinator.client.agreement_id}_calendar"
+
+
+@callback
+def _async_remove_calendar(
+    hass: HomeAssistant, entry: HraConfigEntry, coordinator: HraCoordinator
+) -> None:
+    """Remove a calendar left behind after it was switched off."""
+    registry = er.async_get(hass)
+    if entity_id := registry.async_get_entity_id(
+        Platform.CALENDAR, DOMAIN, _unique_id(coordinator)
+    ):
+        registry.async_remove(entity_id)
 
 
 async def async_setup_entry(
@@ -21,14 +41,14 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up HRA calendar from config entry."""
-    # Options win; fall back to the setup-time value, then to enabled.
-    enabled = entry.options.get(
-        CONF_ENABLE_CALENDAR, entry.data.get(CONF_ENABLE_CALENDAR, True)
-    )
-    if not enabled:
+    coordinator = entry.runtime_data
+
+    if not calendar_enabled(entry):
+        _async_remove_calendar(hass, entry, coordinator)
         return
 
-    async_add_entities([HraCalendar(entry.runtime_data)])
+    tracked = tracked_fractions(entry, set(WASTE_TYPES) | set(coordinator.data or {}))
+    async_add_entities([HraCalendar(coordinator, tracked)])
 
 
 class HraCalendar(HraEntity, CalendarEntity):
@@ -36,21 +56,27 @@ class HraCalendar(HraEntity, CalendarEntity):
 
     _attr_translation_key = "pickup_calendar"
 
-    def __init__(self, coordinator: HraCoordinator) -> None:
+    def __init__(self, coordinator: HraCoordinator, tracked: set[str]) -> None:
         """Initialize calendar."""
         super().__init__(coordinator)
-        self._attr_unique_id = f"{DOMAIN}_{coordinator.client.agreement_id}_calendar"
+        self._tracked = tracked
+        self._attr_unique_id = _unique_id(coordinator)
+
+    def _schedule(self) -> dict[str, list[datetime]]:
+        """Return the schedule limited to the tracked fractions."""
+        return {
+            waste_type: dates
+            for waste_type, dates in (self.coordinator.data or {}).items()
+            if waste_type in self._tracked
+        }
 
     @property
     def event(self) -> CalendarEvent | None:
         """Return the next upcoming event."""
-        if not self.coordinator.data:
-            return None
-
         today = dt_util.now().date()
         next_pickup: tuple[str, datetime] | None = None
 
-        for waste_type, dates in self.coordinator.data.items():
+        for waste_type, dates in self._schedule().items():
             for dt in dates:
                 pickup_date = dt.date()
                 if pickup_date >= today:
@@ -76,14 +102,11 @@ class HraCalendar(HraEntity, CalendarEntity):
         end_date: datetime,
     ) -> list[CalendarEvent]:
         """Return events in date range."""
-        if not self.coordinator.data:
-            return []
-
         events: list[CalendarEvent] = []
         start = start_date.date()
         end = end_date.date()
 
-        for waste_type, dates in self.coordinator.data.items():
+        for waste_type, dates in self._schedule().items():
             for dt in dates:
                 pickup_date = dt.date()
                 if start <= pickup_date < end:

@@ -6,8 +6,9 @@ import httpx
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.httpx_client import get_async_client
 
+from .const import DEFAULT_WEEKS
+
 BASE_URL = "https://api.hra.no"
-DEFAULT_WEEKS = 12
 
 
 class HraApiError(Exception):
@@ -17,9 +18,12 @@ class HraApiError(Exception):
 class HraApiClient:
     """Client for HRA Recycling API."""
 
-    def __init__(self, hass: HomeAssistant, address: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, address: str, weeks: int = DEFAULT_WEEKS
+    ) -> None:
         self._hass = hass
         self._address = address
+        self._weeks = weeks
         self.agreement_id: str = ""
 
     @property
@@ -63,7 +67,10 @@ class HraApiClient:
     async def _fetch_pickup_schedule(self) -> dict:
         """Fetch pickup schedule from JSON API."""
         client = get_async_client(self._hass)
-        url = f"{BASE_URL}/Renovation/UpcomingGarbageDisposals/{self.agreement_id}?weeks={DEFAULT_WEEKS}"
+        url = (
+            f"{BASE_URL}/Renovation/UpcomingGarbageDisposals/"
+            f"{self.agreement_id}?weeks={self._weeks}"
+        )
 
         try:
             response = await client.get(url, timeout=10)

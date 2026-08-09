@@ -12,7 +12,11 @@
         "title": "Options",
         "description": "Configure additional options for HRA Recycling.",
         "data": {
-          "enable_calendar": "Add pickup dates to Home Assistant calendar"
+          "enable_calendar": "Add pickup dates to Home Assistant calendar",
+          "weeks": "Weeks of pickups to fetch"
+        },
+        "data_description": {
+          "weeks": "How far ahead the schedule is fetched. Affects the calendar; the sensors only ever show the next pickup."
         }
       }
     },
@@ -29,9 +33,18 @@
         "title": "Options",
         "description": "Configure additional options for HRA Recycling.",
         "data": {
-          "enable_calendar": "Add pickup dates to Home Assistant calendar"
+          "tracked_fractions": "Fractions to track",
+          "enable_calendar": "Add pickup dates to Home Assistant calendar",
+          "weeks": "Weeks of pickups to fetch"
+        },
+        "data_description": {
+          "tracked_fractions": "One sensor is created per selected fraction. Unselecting one removes its sensor.",
+          "weeks": "How far ahead the schedule is fetched. Affects the calendar; the sensors only ever show the next pickup."
         }
       }
+    },
+    "error": {
+      "no_fractions": "Select at least one fraction to track."
     }
   },
   "entity": {

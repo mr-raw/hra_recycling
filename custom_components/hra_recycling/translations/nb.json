@@ -12,7 +12,11 @@
         "title": "Innstillinger",
         "description": "Konfigurer ekstra innstillinger for HRA Recycling.",
         "data": {
-          "enable_calendar": "Legg til hentedatoer i Home Assistant-kalenderen"
+          "enable_calendar": "Legg til hentedatoer i Home Assistant-kalenderen",
+          "weeks": "Antall uker med hentinger som hentes"
+        },
+        "data_description": {
+          "weeks": "Hvor langt fram planen hentes. Påvirker kalenderen; sensorene viser uansett bare neste henting."
         }
       }
     },
@@ -29,9 +33,18 @@
         "title": "Innstillinger",
         "description": "Konfigurer ekstra innstillinger for HRA Recycling.",
         "data": {
-          "enable_calendar": "Legg til hentedatoer i Home Assistant-kalenderen"
+          "tracked_fractions": "Fraksjoner som skal spores",
+          "enable_calendar": "Legg til hentedatoer i Home Assistant-kalenderen",
+          "weeks": "Antall uker med hentinger som hentes"
+        },
+        "data_description": {
+          "tracked_fractions": "Det lages én sensor per valgte fraksjon. Fjerner du en, slettes sensoren.",
+          "weeks": "Hvor langt fram planen hentes. Påvirker kalenderen; sensorene viser uansett bare neste henting."
         }
       }
+    },
+    "error": {
+      "no_fractions": "Velg minst én fraksjon å spore."
     }
   },
   "entity": {

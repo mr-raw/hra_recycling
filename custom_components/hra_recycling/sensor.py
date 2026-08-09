@@ -9,13 +9,16 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
 )
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from .const import DEFAULT_ICON, DOMAIN, WASTE_TYPES
 from .coordinator import HraConfigEntry, HraCoordinator
 from .entity import HraEntity
+from .options import tracked_fractions
 
 PARALLEL_UPDATES = 0
 
@@ -39,6 +42,27 @@ def _describe(waste_type: str) -> SensorEntityDescription:
     )
 
 
+def _unique_id(coordinator: HraCoordinator, key: str) -> str:
+    """Return the unique ID for a sensor key."""
+    return f"{DOMAIN}_{coordinator.client.agreement_id}_{key}"
+
+
+@callback
+def _async_purge_untracked(
+    hass: HomeAssistant,
+    entry: HraConfigEntry,
+    coordinator: HraCoordinator,
+    tracked: set[str],
+) -> None:
+    """Drop registry entries for fractions the user no longer tracks."""
+    registry = er.async_get(hass)
+    wanted = {_unique_id(coordinator, _describe(f).key) for f in tracked}
+
+    for registered in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if registered.domain == Platform.SENSOR and registered.unique_id not in wanted:
+            registry.async_remove(registered.entity_id)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: HraConfigEntry,
@@ -47,16 +71,21 @@ async def async_setup_entry(
     """Set up HRA sensors from config entry."""
     coordinator = entry.runtime_data
 
-    # Always create the known waste types, even if this refresh returned nothing,
-    # so an empty response never silently leaves the integration without entities.
+    # Always consider the known waste types, even if this refresh returned
+    # nothing, so an empty response never silently leaves the integration
+    # without entities.
     known = set(WASTE_TYPES)
     added: set[str] = set()
 
+    _async_purge_untracked(
+        hass, entry, coordinator, tracked_fractions(entry, known | set(coordinator.data or {}))
+    )
+
     @callback
     def _add_new_waste_types() -> None:
-        """Add entities for waste types seen for the first time."""
-        wanted = known | set(coordinator.data or {})
-        new = wanted - added
+        """Add entities for tracked waste types seen for the first time."""
+        tracked = tracked_fractions(entry, known | set(coordinator.data or {}))
+        new = tracked - added
         if not new:
             return
         added.update(new)
@@ -84,7 +113,7 @@ class HraSensor(HraEntity, SensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._waste_type = waste_type
-        self._attr_unique_id = f"{DOMAIN}_{coordinator.client.agreement_id}_{description.key}"
+        self._attr_unique_id = _unique_id(coordinator, description.key)
 
     @property
     def _next_pickup(self) -> date | None:
